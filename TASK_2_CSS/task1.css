@@ -1,0 +1,65 @@
+.ent{
+    margin: 10px 20px;
+    max-width: 30%;
+}
+
+.header{
+    position: sticky;
+    top: 0;
+    border: 2px solid black;
+    background: linear-gradient(rgb(106, 106, 240), rgb(179, 179, 233));
+    border-radius: 10px;
+    text-align: center;
+}
+
+.logo{
+    margin: 0;
+    padding: o;
+    /* position: relative;
+    right: 300px; */
+    position: sticky;
+    top: 0;
+    text-align: left;
+}
+
+.button{
+    background-color: rgb(123, 123, 177);
+    text-align: right;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    
+}
+
+
+
+.nav-button{
+    font-weight: bold;
+    color: rgb(0, 0, 0);
+    margin-right: 10px;
+}
+
+.nav-button:hover{
+    background-color: #416d9c;
+    color: rgb(70, 70, 29);
+}
+
+h2{
+    border: 2px solid rgb(111, 111, 173);
+    border-radius: 5px;
+    color: rgb(38, 38, 51);
+    background-color: rgb(150, 150, 204);
+    text-align: center;
+}
+
+.first-paragraph{
+    background: linear-gradient(rgb(106, 106, 240), rgb(179, 179, 233));
+}
+
+.ending{
+    position: sticky;
+    bottom: 0%;
+    border: 2px;
+    border-radius: 10px;
+    background: linear-gradient(rgb(106, 106, 240), rgb(179, 179, 233));
+}

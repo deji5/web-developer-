@@ -1,0 +1,83 @@
+.ent{
+    margin: 10px 20px;
+    max-width: 30%;
+}
+
+.header{
+    background: linear-gradient( rgb(162, 187, 162), rgb(139, 255, 139));
+    text-align: center;
+    border-radius: 5px;
+}
+
+.main-cont{
+    display: flex;
+}
+.menu-botton{
+    max-width: 25px;
+    background: linear-gradient(rgb(74, 100, 74), rgb(40, 58, 40), rgb(240, 62, 62));
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    border-radius: 5px;
+    padding: 20px;
+    border: 2px solid black;
+}
+
+.nav-btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+    top: 35px;
+}
+.Home{
+    border: 2px solid white;
+    border-radius: 5px;
+    padding: 8px;
+}
+
+a{
+    color: aliceblue;
+}
+
+.Menu{
+    border: 2px solid white;
+    border-radius: 5px;
+    padding: 8px;
+}
+
+.About{
+    border: 2px solid white;
+    border-radius: 5px;
+    padding: 8px;
+}
+
+.Join{
+    border: 2px solid white;
+    border-radius: 5px;
+    padding: 8px;
+
+}
+
+.main{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+    top: 35px;
+}
+
+.sec-s{
+    max-width: 25px;
+    background: linear-gradient(rgb(74, 100, 74), rgb(40, 58, 40), rgb(240, 62, 62));
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    border-radius: 5px;
+    padding: 20px;
+    border: 2px solid black;
+}

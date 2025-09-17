@@ -1,0 +1,320 @@
+<style>
+    .container {
+        background-color: #c0c0c0;
+        padding: 20px;
+        margin-bottom: 30px;
+        border-radius: 9px;
+        color: rgb(0, 0, 0);
+    }
+    
+    .box-comparison {
+        display: inline-block;
+        width: 200px;
+        padding: 20px;
+        margin: 10px;
+        border: 3px solid #3498db;
+        background-color: #ecf0f1;
+        text-align: center;
+        vertical-align: top;
+    }
+    
+    .content-box {
+        box-sizing: content-box;
+        background-color: 0#ffd3da;
+        border-color: #e74c3c;
+    }
+    
+    .border-box {
+        box-sizing: border-box;
+        background-color: #e8f5e8;
+        border-color: #27ae60;
+    }
+    
+    .margin-demo {
+        background-color: #fff3cd;
+        padding: 15px;
+        text-align: center;
+    }
+    
+    .margin-top { margin-top: 30px; }
+    .margin-bottom { margin-bottom: 20px; }
+    
+    .size-info {
+        font-size: 12px;
+        color: #666;
+        margin-top: 10px;
+    }
+</style>
+
+<h3>Box Model Advanced Concepts</h3>
+
+<div class="container">
+    <h4>Box-Sizing Comparison</h4>
+    <p>Both boxes have width: 200px, padding: 20px, border: 3px</p>
+    
+    <div class="box-comparison content-box">
+        <strong>Content-Box</strong><br>
+        Default behavior<br>
+        <div class="size-info">
+            Total width: 246px<br>
+            (200 + 40 + 6)
+        </div>
+    </div>
+    
+    <div class="box-comparison border-box">
+        <strong>Border-Box</strong><br>
+        Modern approach<br>
+        <div class="size-info">
+            Total width: 200px<br>
+            (padding/border inside)
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <h4>Margin Collapsing</h4>
+    <div class="margin-demo margin-bottom">
+        This element has margin-bottom: 20px
+    </div>
+    <div class="margin-demo margin-top">
+        This element has margin-top: 30px<br>
+        <small>Gap above = 30px (larger margin wins)</small>
+    </div>
+</div>
+
+<style>
+    .position-demo {
+        background-color: #f8f9fa;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+        min-height: 200px;
+        color: black
+    }
+    
+    .demo-container {
+        position: relative;
+        background-color: #e9ecef;
+        height: 150px;
+        border: 2px dashed #6c757d;
+        margin: 10px 0;
+    }
+    
+    .demo-box {
+        width: 80px;
+        height: 60px;
+        color: rgb(65, 2, 2);
+        text-align: center;
+        line-height: 60px;
+        font-weight: bold;
+        font-size: 12px;
+    }
+    
+    .static-box {
+        position: static;
+        background-color: #6c757d;
+        display: inline-block;
+    }
+    
+    .relative-box {
+        position: relative;
+        background-color: #647375;
+        top: 20px;
+        left: 30px;
+        display: inline-block;
+        color: black
+    }
+
+    .static-box, .relative-box {
+        vertical-align: top;
+    }
+    
+    .absolute-box {
+        position: absolute;
+        background-color: #dc3545;
+        top: 20px;
+        right: 20px;
+    }
+    
+</style>
+
+<h3>CSS Positioning in Action</h3>
+
+<div class="position-demo">
+    <h4>Static vs Relative Positioning</h4>
+    <div class="static-box demo-box">Static</div>
+    <div class="relative-box demo-box">Relative</small></div>
+    <p><small>Relative keeps original space but moves visually</small></p>
+</div>
+
+<div class="position-demo">
+    <h4>Absolute Positioning</h4>
+    <div class="demo-container">
+        <p>This container has position: relative (positioning context)</p>
+        <div class="absolute-box demo-box">Absolute</div>
+    </div>
+</div>
+
+<style>
+    .sticky-demo-container {
+        background-color: #f8f9fa;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+        height: 400px;
+        overflow-y: scroll;
+        border: 2px solid #dee2e6;
+        color: black;
+    }
+    
+    .sticky-header {
+        position: sticky;
+        top: 0;
+        background: linear-gradient(rgb(70, 2, 2), rgb(141, 16, 16), rgb(42, 42, 77), rgb(228, 228, 208));
+        color: rgb(255, 255, 255);
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        font-weight: bold;
+        text-align: center;
+    }
+    
+    .content-section {
+        background: linear-gradient(rgb(163, 121, 163), rgb(236, 171, 171));
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+        height: 150px;
+    }
+    
+    .content-section h4 {
+        margin-top: 0;
+        color: #2c3e50;
+    }
+</style>
+
+<h3>Sticky Positioning Demo</h3>
+
+<div class="sticky-demo-container">
+    <div class="sticky-header">
+        Sticky Header - Scroll down and watch me stick!
+    </div>
+    
+    <div class="content-section">
+        <h4>Section 1</h4>
+        <p>This is the first section of content. Notice how the header above stays "sticky" at the top when you scroll down through this container.</p>
+        <p>Sticky positioning is perfect for navigation bars, table headers, and section dividers.</p>
+    </div>
+    
+    <div class="content-section">
+        <h4>Section 2</h4>
+        <p>Here's more content to scroll through. The sticky header should remain visible at the top of the scrollable container.</p>
+        <p>Unlike fixed positioning, sticky elements stay within their parent container.</p>
+    </div>
+    
+    <div class="content-section">
+        <h4>Section 3</h4>
+        <p>Keep scrolling to see the sticky behavior in action. This is commonly used in modern web design for improved user experience.</p>
+        <p>Sticky positioning requires a threshold value (top, bottom, left, or right) to work properly.</p>
+    </div>
+    
+    <div class="content-section">
+        <h4>Section 4</h4>
+        <p>Final section of content. The sticky header will disappear when you reach the end of its containing element.</p>
+        <p>This makes sticky positioning perfect for section-based layouts and long-form content.</p>
+    </div>
+</div>
+
+<p><small><strong>Scroll within the gray container above to see sticky positioning in action!</strong></p>
+
+%%html
+<style>
+    .display-demo {
+        background-color: #64788b;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+        color:black;
+    }
+    
+    .demo-element {
+        padding: 8px 12px;
+        margin: 5px;
+        background-color: #0c81ff;
+        color: white;
+        border-radius: 4px;
+    }
+    
+    .block-demo {
+        display: block;
+        background-color: #dc3545;
+    }
+    
+    .inline-demo {
+        display: inline;
+        background-color: #25923c;
+    }
+    
+    .inline-block-demo {
+        display: inline-block;
+        background-color: #ffc107;
+        color: black;
+        width: 120px;
+        text-align: center;
+    }
+    
+    .navigation-demo {
+        background-color: #8b99a7;
+        padding: 10px;
+        border-radius: 5px;
+    }
+    
+    .nav-item {
+        display: inline-block;
+        padding: 8px 16px;
+        color: rgb(255, 255, 255);
+        text-decoration: none;
+        border-radius: 4px;
+        margin-right: 5px;
+    }
+    
+    .nav-item:hover {
+        background-color: #416d9c;
+        color: rgb(70, 70, 29);
+    }
+</style>
+
+<h3>Display Properties in Action</h3>
+
+<div class="display-demo">
+    <h4>Block Elements</h4>
+    <div class="demo-element block-demo">Block Element 1 (full width)</div>
+    <div class="demo-element block-demo">Block Element 2 (full width)</div>
+</div>
+
+<div class="display-demo">
+    <h4>Inline Elements</h4>
+    <span class="demo-element inline-demo">Inline 1</span>
+    <span class="demo-element inline-demo">Inline 2</span>
+    <span class="demo-element inline-demo">Inline 3</span>
+    <p><small>Notice how inline elements flow together on the same line</small></p>
+</div>
+
+<div class="display-demo">
+    <h4>Inline-Block Elements</h4>
+    <div class="demo-element inline-block-demo">Item 1</div>
+    <div class="demo-element inline-block-demo">Item 2</div>
+    <div class="demo-element inline-block-demo">Item 3</div>
+    <p><small>Inline-block flows horizontally but accepts width and height</small></p>
+</div>
+
+<div class="display-demo">
+    <h4>Practical Example: Navigation Menu</h4>
+    <nav class="navigation-demo">
+        <a href="#" class="nav-item">Home</a>
+        <a href="#" class="nav-item">About</a>
+        <a href="#" class="nav-item">Services</a>
+        <a href="#" class="nav-item">Contact</a>
+    </nav>
+    <p><small>Navigation items use inline-block for horizontal layout with padding control</small></p>
+</div>
