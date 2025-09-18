@@ -1,6 +1,8 @@
 .ent{
     margin: 10px 20px;
-    max-width: 30%;
+    /* max-width: 30%; */
+    background-color: bisque;
+    border-radius: 10px;
 }
 
 .header{
@@ -67,8 +69,8 @@ a{
     justify-content: center;
     flex-direction: column;
     gap: 20px;
-    position: relative;
-    top: 35px;
+    /* position: relative; */
+    top: 35px; 
 }
 
 .sec-s{
@@ -80,4 +82,25 @@ a{
     border-radius: 5px;
     padding: 20px;
     border: 2px solid black;
+}
+
+.sec-w-s{
+      display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+    top: 35px;
+}
+
+.footer{
+    margin: x20p
+}
+
+.register{
+    background: linear-gradient( rgb(162, 187, 162), rgb(139, 255, 139));
+    text-align: center;
+    position: sticky;
+    bottom: 0;
 }
