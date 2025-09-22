@@ -13,9 +13,12 @@
         border: 2px solid #ddd;
         border-radius: 8px;
         color: #282bec;
+        text-align: center;
+        
     }
     .list {
         list-style: none;
+        
     }
   
     
@@ -27,6 +30,7 @@
         color: #7d67dd;
         cursor: pointer;
         font-size: 16px;
+        
     }
     .demo-button:hover {
         background-color: #807ca7;
@@ -38,6 +42,16 @@
         border-left:4px solid #7b7591;
         font-family: 'Courier New', monospace;
         width: 70%;
+        position: relative;
+        left: 250px;
+        animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce{
+         0%, 100%{ transform: translate(0);}
+      30%{ transform: translatey(-10px);}
+      50%{ transform: translatey(5px);}
+      70%{ transform: translatex(10px);}
     }
 </style>
 
