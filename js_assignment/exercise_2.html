@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+     <style>
+    .container {
+        background-color: rgb(7, 8, 41);
+        padding: 20px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        color: #282bec;
+    }
+    .list {
+        list-style: none;
+    }
+  
+    
+    .demo-button {
+        margin: 15px;
+        padding: 10px;
+        border-radius: 6px;
+        border: none;
+        color: #7d67dd;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    .demo-button:hover {
+        background-color: #807ca7;
+    }
+    .output {
+        background-color: rgb(219, 233, 213);
+        padding: 10px;
+        border-radius: 8px;
+        border-left:4px solid #7b7591;
+        font-family: 'Courier New', monospace;
+        width: 70%;
+    }
+</style>
+
+
+<div class="container">
+    <h3>Basic Calculator</h3>
+    <p>Allows you to perform simple operations like:</p>
+    <ul>
+        <li class="list">Addition</li>
+        <li class="list">Subtraction</li>
+        <li class="list">Multiplication</li>
+        <li class="list">Division</li>
+        <li class="list">Remainder</li>
+    </ul>
+
+    <button class="demo-button" onclick="mysolutionOperations()">Solution</button>
+    <button class="demo-button" onclick="userperfomance()">Performance</button>
+
+
+    <div id="exercise2-output" class="output">Click to see calculator operations...</div>
+</div>
+
+
+
+<script>
+    function mysolutionOperations() {
+        let number1 = 20;
+        let number2 = 5;
+
+        let addition = 20 + 5;
+        let subtraction = 20 - 5;
+        let multiplication = 20 * 5;
+        let division = 20 / 5;
+        let remainder = 20 % 5;
+
+        let output = `
+        value1: ${number1} <br><br>
+        value2: ${number2} <br><br>
+        value1 + value2 : ${addition}<br><br>
+        value1 - value2: ${subtraction}<br><br>
+        value1 * value2: ${multiplication}<br><br>
+        value1 / value2: ${division}<br><br>
+        value1 % value2: ${remainder}<br><br>`
+        document.getElementById('exercise2-output').innerHTML = output
+    }
+
+    function userperfomance() {
+        let num1 = Number(prompt('Enter your first value here: '));
+        let num2 = Number(prompt('Enter your second value here: '));
+
+        let addition = num1 + num2;
+        let subtraction = num1 - num2;
+        let multiplication = num1 * num2;
+        let division = num1 / num2;
+        let remainder = num1 % num2;
+
+        let output =`
+        Perform Addition: ${addition}<br><br>
+        perform Subtraction: ${subtraction}<br><br>
+        perform Multiplication: ${multiplication}<br><br>
+        Perform Division: ${division}<br><br>
+        Perform Remainder: ${remainder}<br><br>
+        `
+        document.getElementById('exercise2-output').innerHTML = output
+    }
+</script>    
+</body>
+</html>
