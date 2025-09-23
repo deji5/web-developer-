@@ -8,11 +8,11 @@
 <body>
      <style>
     .container {
-        background-color: rgb(7, 8, 41);
+        background: linear-gradient(90deg,rgb(8, 8, 58), rgb(233, 209, 209));
         padding: 20px;
-        border: 2px solid #ddd;
+        border: 2px solid #d3c7c7;
         border-radius: 8px;
-        color: #282bec;
+        color: #ffffff;
         text-align: center;
         
     }
@@ -27,16 +27,17 @@
         padding: 10px;
         border-radius: 6px;
         border: none;
-        color: #7d67dd;
+        color: #4c2be2;
         cursor: pointer;
         font-size: 16px;
-        
+        box-shadow: 0 2px 8px rgb(247, 230, 2);   
     }
     .demo-button:hover {
         background-color: #807ca7;
+        box-shadow: 0 2px 8px rgb(201, 49, 49);
     }
     .output {
-        background-color: rgb(219, 233, 213);
+        background-color: rgb(168, 30, 30);
         padding: 10px;
         border-radius: 8px;
         border-left:4px solid #7b7591;
@@ -44,9 +45,14 @@
         width: 70%;
         position: relative;
         left: 250px;
-        animation: bounce 2s infinite;
-    }
+        
+       
 
+    }
+.output:hover{
+     box-shadow: 0 2px 8px b(0, 0, 0);
+     animation: bounce 2s infinite;
+}
     @keyframes bounce{
          0%, 100%{ transform: translate(0);}
       30%{ transform: translatey(-10px);}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div><button class="weather" id="check" onclick="checkWeather()">click me</button></div>
+    <script>
+        function checkWeather() {
+            let temperature = prompt("enter how degree the weather is ");
+            let isRaining = true;
+
+            if (temperature < 32 && isRaining) {
+                console.log("freezing and Raining wear a rain jacket and take an umbrella")
+            } else if (temperature < 32) {
+                console.log("its freezing wear a coat")
+            } else if (temperature > 32 - 60) {
+                console.log("It's chilly. A jacket would be good.");
+            } else if (temperature < 60 - 80) {
+                console.log("Nice weather! A light sweater is perfect.");
+            } else if ( temperature > 80) {
+                console.log("It's hot, Hydrate!");
+            }
+        }
+
+        console.log(checkWeather())
+    </script>
+</body>
+</html>

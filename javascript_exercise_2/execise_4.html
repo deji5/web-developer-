@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <button class="abam" id="account" onclick="accessBank()">check bank
+        </button>
+        <script>
+            function accessBank(){
+                let balance = 20000;
+                let withdraw = Number(prompt("Enter amount to withdraw"));
+
+                if (withdraw > balance) {
+                    console.log("You cant withdraw, insufficient balance")
+                }
+                if (withdraw <= balance, balance -= withdraw) {
+                    console.log(`The amount: ${withdraw} as gone through`)
+                } else {
+                    console.log("Insufficient funds")
+                }
+
+                let deposit = Number(prompt("enter amount to deposit"))
+
+                 if (deposit <= balance, balance += deposit) {
+                    console.log(`The amount: ${deposit} as gone through`)
+                }
+
+                console.log(`here is your balance ${balance}`)
+            }
+            console.log(accessBank())
+        </script>
+    </div>
+</body>
+</html>
