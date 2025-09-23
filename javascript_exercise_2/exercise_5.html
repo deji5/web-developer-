@@ -16,41 +16,37 @@
        
         let message = "";
 
-        // Time-based advice
         if (time >= 6 && time < 12) {
             console.log(`${message += "Good morning! "}`);
         } else if (time >= 12 && time < 18) {
-            message += "Good afternoon! ";
+            console.log(`${message += "Good afternoon!"}`);
         } else if (time >= 18 && time < 22) {
-            message += "Good evening!";
+            console.log(`${message += "Good evening!"}`);
         } else {
-            message += "It's late! You should probably rest. ";
+            console.log(`${message +="It's late! You should probably rest."}`);
         }
 
         if (weather === "rainy") {
-            message += "Don’t forget your umbrella! ";
+            console.log(`${message +="Don’t forget your umbrella! "}`);
         } else if (weather === "sunny" && time >= 10 && time <= 16) {
-            message += "It’s a bright day — stay hydrated and use sunscreen!";
+            console.log(`${message +="It’s a bright day — stay hydrated and use sunscreen!"}`);
         } else if (weather === "cloudy") {
-            message += "It might be a cozy day for reading or coffee.";
+            console.log(`${message += "It might be a cozy day for reading or coffee."}`);
         }
 
-        // Day type advice
         if (dayType === "workday" && time >= 9 && time <= 17) {
-            message += "Focus on your tasks — it’s work hours!";
+           console.log(`${message += "Focus on your tasks — it’s work hours!"}`);
         } else if (dayType === "weekend" && (time >= 10 && time <= 20)) {
-            message += "Great time to relax or hang out with friends.";
+            console.log(`${message += "Great time to relax or hang out with friends."}`);
         } else if (dayType === "holiday") {
-            message += "Enjoy your holiday — make it special!";
+            console.log(`${message += "Enjoy your holiday — make it special!"}`);
         }
 
-        // Using logical operator
         if (dayType === "workday" && (time < 6 || time > 22)) {
-            message += "Remember, rest is just as important as work.";
+            console.log(`${message += "Remember, rest is just as important as work."}`);
         }
 
-        // Ternary operator for a quick decision
-        message += (weather === "sunny") ? "Perfect day for a walk outside." : "Maybe stay indoors for comfort.";
+        console.log(`${message += (weather === "sunny") ? "Perfect day for a walk outside." : "Maybe stay indoors for comfort."}`);
 
         return message;
         }
