@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+
+</head>
+<body>
+  <div id="summary" class="movie-list"></div>
+
+  <script>
+    let movies = [];
+    let ratings = [];
+
+    function addMovie(movie, rating) {
+    movies.push(movie);
+    ratings.push(rating);
+    console.log(`Added: ${movie} — Rating: ${rating}`);
+    printSummary();
+    }
+
+    function getAverageRating() {
+    if (ratings.length === 0) return 0;
+    let sum = 0;
+    for (let rate of ratings) {
+        sum += rate;
+    }
+    return (sum / ratings.length) //.toFixed(2);
+    }
+
+    function getTopMovie() {
+    if (ratings.length === 0) return "No movies yet!";
+    let maxIndex = 0;
+    for (let i = 1; i < ratings.length; i++) {
+        if (ratings[i] > ratings[maxIndex]) {
+        maxIndex = i;
+        }
+    }
+    // return movies[maxIndex] + " (" + ratings[maxIndex] + ")";
+    }
+
+    function printSummary() {
+    console.clear();
+    console.log("Movie Ratings System");
+    for (let i = 0; i < movies.length; i++) {
+        console.log(`${movies[i]} — Rating: ${ratings[i]}`);
+    }
+
+    console.log("Summary:");
+    console.log("Average Rating: " + getAverageRating());
+    console.log("Top Movie: " + getTopMovie());
+
+    displaySortedMovies();
+    }
+
+    function displaySortedMovies() {
+    let combined = [];
+    for (let i = 0; i < movies.length; i++) {
+        combined.push({ movie: movies[i], rating: ratings[i] });
+    }
+
+    combined.sort((a, b) => b.rating - a.rating);
+
+    console.log("Movies Sorted by Rating (High → Low):");
+    combined.forEach(item => {
+        console.log(`${item.movie} — Rating: ${item.rating}`);
+    });
+    }
+
+    addMovie("Inception", 9);
+    addMovie("Titanic", 8);
+    addMovie("Avatar", 7);
+
+  </script>
+</body>
+</html>

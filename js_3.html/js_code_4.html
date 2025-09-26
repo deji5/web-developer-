@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let students = [];
+
+        function addStudent(name, grade) {
+
+        if (typeof name !== "string" || name.trim() === "") {
+            console.log("Invalid name.");
+        }
+        if (typeof grade !== "number" || grade < 0 || grade > 100) {
+            console.log("Invalid grade. Must be between 0 and 100.");
+        }
+
+        students.push({ name: name.trim(), grade });
+        }
+
+        function calculateAverage() {
+        if (students.length === 0) return 0;
+        let total = 0;
+        for (let student of students) {
+            total += student.grade;
+        }
+        return (total / students.length).toFixed(2);
+        }
+
+        function findTopStudent() {
+        if (students.length === 0) return null;
+        let top = students[0];
+        for (let student of students) {
+            if (student.grade > top.grade) {
+            top = student;
+            }
+        }
+        return top;
+        }
+
+        function findBottomStudent() {
+        if (students.length === 0) return null;
+        let bottom = students[0];
+        for (let student of students) {
+            if (student.grade < bottom.grade) {
+            bottom = student;
+            }
+        }
+        return bottom;
+        }
+
+        function getLetterGrade(score) {
+        if (score >= 90) return "A";
+        if (score >= 80) return "B";
+        if (score >= 70) return "C";
+        if (score >= 60) return "D";
+        return "F";
+        }
+
+        function generateReport() {
+        if (students.length === 0) {
+            console.log("No students in the system.");
+        }
+
+        students.sort((a, b) => b.grade - a.grade);
+
+        console.log("CLASS REPORT");
+        console.log("Name  Grade Letter");
+
+        for (let student of students) {
+            console.log(
+            `${student.name}  ${student.grade}  ${getLetterGrade(student.grade)}`
+            );
+        }
+
+        console.log("Class Average:", calculateAverage());
+        console.log("Top Student:", findTopStudent().name, "-", findTopStudent().grade);
+        console.log("Lowest Student:",findBottomStudent().name,"-",findBottomStudent().grade);
+        }
+
+        addStudent("Joy", 85);
+        addStudent("Olamide", 92);
+        addStudent("Bobmarley", 67);
+        addStudent("David", 73);
+        addStudent("Burnaboy", 59);
+        addStudent("Deji", 100);
+
+        generateReport();
+
+    </script>
+</body>
+</html>

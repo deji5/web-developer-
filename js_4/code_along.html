@@ -1,0 +1,82 @@
+<script>
+    let movies = [
+        {
+            title: "Avatar",
+            director: "Lauren Montgomery",
+            releaseYear: "2005",
+            rating: "9/10",
+        },
+        {
+            title: "Fast and furious",
+            director: "Rob Cohen",
+            releaseYear: "2001",
+            rating: "8/10",
+        },
+        {
+            title: "Spider Man",
+            director: "Sam Raimi",
+            releaseYear: "2002",
+            rating: "7.4/10",
+        }
+    ];
+    // let movie = [];
+
+    console.log("Movie List:")
+    for(let movie of movies) {
+        console.log(`${movie.title} (${movie.releaseYear}), directed by ${movie.director}, rated ${movie.rating}`);
+    }
+
+    for(movie of movies) {
+        movies.isWatched = true;
+    }
+    console.log("After modification:", movies);
+    console.log(`${movies}`)
+    console.log("")
+
+    for(let movie of movies) {
+        if (movie.rating >= 8) {
+            console.log(`${Movie.name}`);
+            break;
+        }
+    }
+
+
+</script>
+
+<script>
+    function CartItem(name, price, quantity) {
+    this.name = name;
+    this.price = price;
+    this.quantity = quantity;
+
+    this.getTotal = function () {
+        return this.price * this.quantity;
+    };
+    }
+
+    let cart = [
+    new CartItem("Laptop", 1200, 1),
+    new CartItem("Headphones", 100, 2),
+    new CartItem("Mouse", 50, 3)
+    ];
+
+    function getCartTotal(cart) {
+    let total = 0;
+    for (let item of cart) {
+        total += item.getTotal();
+    }
+    return total;
+    }
+
+    console.log("Cart Items:");
+    cart.forEach(item => {
+    console.log(`${item.name} - #${item.price} x ${item.quantity} = #${item.getTotal()}`);
+    });
+
+    console.log("Total Cart Value: $" + getCartTotal(cart));
+
+</script>
+
+<script>
+
+</script>
