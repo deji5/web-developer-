@@ -22,6 +22,12 @@
     position: relative;
     left: 42px;
 }
+
+.btn {
+    display: flex;
+    justify-content: space-between;
+    gap: 50px;
+}
 .button{
     width: 100%;
     padding: 10px;
@@ -35,16 +41,49 @@
     flex-direction: column;
     justify-content: center;
     align-items: center; 
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    
+}
+
+.rbtn {
+    width: 100%;
+    padding: 10px;
+    background-color: #4b4a66;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; 
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 button:hover {
     background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(197, 81, 46, 0.4);
+}
+
+button:active {
+    transform: translateY(0);
 }
 
 .input {
     padding: 2vh;
-    height: 20px;
+    height: 4px;
     width: 50vh;
+}
+
+.input:hover{
+    transform: rotateY(-10px);
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.4);
 }
 
 input::placeholder{
@@ -73,14 +112,35 @@ input::placeholder{
     display: flex;
     flex-direction: column;
     /* justify-content: space-between; */
-    width: 100%;
+    width: 50%;
     /* border: 1px solid #ccc; */
     padding: 10px;
-    border-collapse: separate;
-    border-spacing: 0 10px;
+    border-collapse: separate; 
+    border-spacing: 0 10px; 
+    position: relative; 
+    bottom: 20px; 
+    /* margin-bottom: 500px;  */
+    word-spacing: 4px;
+    top: 30px;
+    bottom: 30px;
+    
 }
 
-tbody {
+td {
     text-align: center;
 }
 
+.tc {
+    position: relative;
+    left: 400px;
+    border: 2px solid rgb(67, 68, 117);
+    width: 200px;
+    border-radius: 10px;
+    transform: rotateY(-10px);
+    
+}
+
+.tc:hover{
+    transform: rotateY(-10px);
+    box-shadow: 0 5px 15px rgba(79, 46, 197, 0.4);
+}
