@@ -14,18 +14,28 @@
             <h1 class="second_header"><strong>Dashboard</strong></h1>
         </div>
         <div class="btn">
-            <button class="button">Add Book</button>
-            <button class="rbtn">Remove Book</button>
+            <button class="button" onclick="addBook()" id="addButton">Add Book</button>
+            <button class="rbtn" onclick="removeBook()" id="removeBook">Remove Book</button>
         </div>
-        <div>
-            <input type="text" id="textinput" class="input"
-                placeholder="search by Title or Author">
+        <div class="input">
+            <div>
+                <input type="text" id="textinput" class="input"
+                    placeholder="Title ">
+                <input type="text" id="textinput2" class="input"
+                    placeholder="Author">
+            </div>
+            <div>
+                <input type="number" id="number" class="input"
+                    placeholder="Year">
+                <input type="text" id="textinput3" class="input"
+                    placeholder="Availability">
+            </div>
         </div>
    
         <!-- <div class="second_body"> -->
             <div class="table">
                 <h2 class="tc"><strong>Table Content</strong></h2>
-                <table>
+                <table id="myTable">
                     <tr>
                         <th>Title</th>
                         <th>Author</th>
@@ -74,6 +84,8 @@
             </div>
         </div>
     </div>
+
+    <script src="group_login.js "></script>
 </body>
 </html>
 
