@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <textarea placeholder="Write the sentence here ..." id="text1">
+
+    </textarea>
+
+    <div class = "text-count">
+        <p>
+            length:
+        </p>
+        <p id="count">
+            0
+        </p>
+
+    </div>
+
+    <script>
+        let text = document.getElementById("text1");
+    text.onkeyup = () => {
+        getCount();
+    }
+    function getCount(){
+        let textValue = text.value.trim();
+        let cnt = document.getElementById("count");
+        let textCount = textValue.length;
+        cnt.textContent = textCount;
+
+        if (textCount === 0){
+            cnt.style.color = "yellow";
+        }
+        else if (textCount> 200){
+            cnt.style.color = "purple";
+        } else {
+            cnt.style.color ="silver blue";
+        }
+        
+    }
+    </script>
+</body>
+</html>

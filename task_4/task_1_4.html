@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let movie = {
+            title : "Melin",
+            director : "Oni Adedeji",
+            releaseYear : 2000,
+            rating : 9.5,
+
+            getSummary() {
+                return `The movie: "${movie.title}(${movie.releaseYear}), directed by ${movie.director} is rated ${movie.rating}"`
+            }
+        }
+
+        movie.isWatched = true
+
+       console.log(movie)
+       console.log(movie.getSummary())
+
+
+
+       let collections = [
+        {
+            title : "flash",
+            director : "Don Jazzy",
+            releaseYear : 2007,
+            rating : 9.5
+        },
+        {
+            title : "Titanic",
+            director : "olamide badoo",
+            releaseYear : 2005,
+            rating : 4.5
+        },
+        {
+            title : "samu alajo",
+            director : "odun adekola",
+            releaseYear : 2006,
+            rating : 8.0
+        }
+       ]
+
+       function getRatings(movies) {
+        let greaterRatings = []
+        for (let m of movies) {
+            if (m.rating >= 8) {
+                greaterRatings.push(m.title)
+            }
+            console.log("Movies with ratings of 8 and above", greaterRatings)
+            
+        }
+    }
+
+    getRatings(collections)
+    </script>
+</body>
+</html>

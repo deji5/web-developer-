@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p id ="cp">
+        checking my paragraph
+    </p>
+
+    <button id = "btn">
+        Click here!
+    </button>
+
+    <script>
+        let text = document.getElementById("cp")
+    let button1 = document.getElementById("btn")
+
+    button1.onclick =()=> {
+        changeColor();
+    }
+    function changeColor(){
+    text.style.color = "grey"; 
+    text.style.display = "flex";
+    }
+    </script>
+</body>
+</html>

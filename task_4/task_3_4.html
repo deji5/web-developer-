@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cd4 exercise three</title>
+
+<style>
+    button {
+        padding: 10px;
+        border: none;
+        border-radius: 6px;
+        background-color: blueviolet;
+        color: white;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: rgb(38, 26, 49);
+    }
+</style>
+</head>
+<body>
+    <button onclick="libarianCheck()">Library Info</button>
+
+
+
+
+    <script>
+        function libarianCheck() {
+            let member = {
+            name : "Adedeji",
+            membershipType : "premium",
+            borrowedBooks: ["Spider Man", "Far From Home", "Shinning"],
+
+            borrowBook(book) {
+                this.borrowedBooks.push(book)
+                console.log(`Borrowed Books: ${this.borrowedBooks}`)
+            },
+
+            getBorrowedCount()  {
+                this.borrowedBooks.length;
+                console.log(`${this.name} has borrowed ${this.borrowedBooks.length} books`) ;
+            },
+
+            getMembershipInfo() {
+                console.log(`${this.name} is a ${this.membershipType} member`)
+
+            }
+        }
+        member.borrowBook("Together")
+        member.getBorrowedCount()
+        member.getMembershipInfo()
+        }
+        
+    </script>
+</body>
+</html>

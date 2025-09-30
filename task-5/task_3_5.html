@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="practice3.js" defer></script>
+    <link rel="stylesheet" href="practice3.css">
+</head>
+<body>
+    <div class = "body">
+        
+            <p class = "greetings">
+                Welcome back
+            </p>
+            <p class = "signup"> Don't have an account? <span> Sign up</span></p>
+            <div class = "input_b">
+                <div class = "input">
+                    <label for = "name">Username:
+                </label>
+                
+                <input for ="name" type="text" id="name">
+                </div>
+                <div class = "input-con">
+                <label for = "password">Password:
+                    
+                </label>
+                <input for ="password" type="password" id="password">
+                </div>
+
+                <button type="submit" id="btn">
+                    Login
+                </button>
+            </div>
+            <p id = "notification">
+
+            </p>
+        
+    </div>
+
+    <script>
+        let username = "admin";
+        let password = "1234"
+        let loginBtn = document.getElementById("btn");
+
+
+        loginBtn.addEventListener("click", function validLogin(e){
+            e.preventDefault();
+            let user = document.getElementById("name");
+            let username = user.value.trim();
+
+            let pass = document.getElementById("password");
+            let password = pass.value.trim();
+            let alert1 = document.getElementById("notification");
+
+            if (username === "" || password === ""){
+                alert1.textContent = "These cannot be left empty!";
+                alert1.style.color ="red";
+            } else if(username === "admin" && password === "1234"){
+                
+                alert1.textContent = "successful";
+                alert1.style.color ="blue";
+            }
+            else {
+                alert1.textContent = `greetings, ${username}!`;
+                alert1.style.color = "blue";
+            }
+                
+                
+            
+        });
+    </script>
+</body>
+</html>
