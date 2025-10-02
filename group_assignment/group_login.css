@@ -1,8 +1,10 @@
 .first_body {
     height: 100vh;
     font-family: Arial, sans-serif;
-    background: linear-gradient(rgb(255, 255, 255), rgb(126, 105, 165));
+    /* background: linear-gradient(rgb(255, 255, 255), rgb(126, 105, 165)); */
+    background-image: url(lib.avif);
     background-repeat: no-repeat;
+    background-size: 100%;
     display: flex;
     flex-direction: column;
     /*padding: 50px;*/
@@ -10,6 +12,7 @@
     align-items: center;
     min-height: 100vh;
     gap: 50px;
+    color: azure;
 }
 
 .first_header{
@@ -145,7 +148,7 @@ td {
 
 .tc:hover{
     transform: rotateY(-10px);
-    box-shadow: 0 5px 15px rgba(79, 46, 197, 0.4);
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.4);
 }
 
 td {
@@ -157,7 +160,8 @@ td {
 td:hover{
     transform: rotateY(-10px);
     box-shadow: 0 5px 15px rgba(253, 253, 253, 0.4); 
-    background-color: aqua;
+    background-color: rgb(255, 255, 255);
+    color: black;
 }
 
 .input {
