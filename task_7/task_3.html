@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vehicle Inheritance Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      background-color: #b68686;
+      margin: 180px;
+      position: absolute;
+      left: 600px;
+    }
+
+    .vehicle {
+      background-color: rgb(116, 65, 65);
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+    }
+
+    .old {
+      color: red;
+      font-weight: bold;
+    }
+
+    .new {
+      color: green;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Vehicle Inheritance</h1>
+
+  <div id="output"></div>
+
+  <script>
+    
+    class Vehicle {
+      constructor(brand, model, year) {
+        this.brand = brand;
+        this.model = model;
+        this.year = year;
+      }
+
+      getInfo() {
+        return `${this.brand} ${this.model} (${this.year})`;
+      }
+
+      isOld() {
+        const currentYear = new Date().getFullYear();
+        return (currentYear - this.year) > 10;
+      }
+    }
+
+
+    class Car extends Vehicle {
+      constructor(brand, model, year, fuelType) {
+        super(brand, model, year);
+        this.fuelType = fuelType;
+      }
+
+      getInfo() {
+        return `${super.getInfo()} - Fuel Type: ${this.fuelType}`;
+      }
+    }
+
+   
+    const vehicle1 = new Vehicle("Toyota", "Corolla", 2003);
+    const car1 = new Car("FERARI", "SPIDER", 2022, "V8");
+    const car2 = new Car("Ford", "F-150", 2010, "Gasoline");
+
+    const vehicles = [vehicle1, car1, car2];
+    const outputDiv = document.getElementById("output");
+
+   
+    vehicles.forEach(vehicle => {
+      const vehicleDiv = document.createElement("div");
+      vehicleDiv.className = "vehicle";
+
+      const info = document.createElement("p");
+      info.textContent = vehicle.getInfo();
+
+      const ageStatus = document.createElement("p");
+      if (vehicle.isOld()) {
+        ageStatus.textContent = "This vehicle is old.";
+        ageStatus.className = "old";
+      } else {
+        ageStatus.textContent = "This vehicle is relatively new.";
+        ageStatus.className = "new";
+      }
+
+      vehicleDiv.appendChild(info);
+      vehicleDiv.appendChild(ageStatus);
+      outputDiv.appendChild(vehicleDiv);
+    });
+  </script>
+
+</body>
+</html>

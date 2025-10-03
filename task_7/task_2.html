@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 30px;
+      color: #f5f5f5;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .student-card {
+      background: #4b3737;
+      padding: 20px;
+      margin: 20px auto;
+      border-radius: 10px;
+      max-width: 400px;
+      box-shadow: 0 4px 12px rgba(255, 5, 5, 0.1);
+    }
+
+    .pass {
+      color: green;
+      font-weight: bold;
+    }
+
+    .fail {
+      color: red;
+      font-weight: bold;
+    }
+
+    .average {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Student Report Card</h1>
+
+  <div id="students-container"></div>
+
+  <script>
+    class Student {
+      constructor(name, age, grades) {
+        this.name = name;
+        this.age = age;
+        this.grades = grades;
+      }
+
+      calculateAverage() {
+        if (this.grades.length === 0) return 0;
+        const sum = this.grades.reduce((total, grade) => total + grade, 0);
+        return (sum / this.grades.length).toFixed(2);
+      }
+
+      getDetails() {
+        const average = this.calculateAverage();
+        const status = average < 50 ? "Failed" : "Passed";
+        return {
+          name: this.name,
+          age: this.age,
+          average,
+          status,
+          passed: average >= 50
+        };
+      }
+    }
+
+    const students = [
+      new Student("Deji", 17, [70, 85, 90, 75]),
+      new Student("John", 16, [40, 45, 30]),
+      new Student("David", 18, [55, 60, 58])
+    ];
+
+    const container = document.getElementById("students-container");
+
+
+    students.forEach(student => {
+      const details = student.getDetails();
+
+      const card = document.createElement("div");
+      card.className = "student-card";
+
+      card.innerHTML = `
+        <h2>${details.name}</h2>
+        <p><strong>Age:</strong> ${details.age}</p>
+        <p class="average"><strong>Average Grade:</strong> ${details.average}</p>
+        <p class="${details.passed ? 'pass' : 'fail'}">${details.status}</p>
+      `;
+
+      container.appendChild(card);
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        class Book{
+            constructor(id, title, authour, year, isBorrowed = false){
+                this.id = id;
+                this.title = title;
+                this.authour = authour;
+                this.year = year;
+                this.isBorrowed = isBorrowed;
+            }
+
+            getSummary(){
+                return`Book: ${this.title} written by ${this.authour} in ${this.year}`
+            }
+
+            borrowBook(){
+                if (this.isBorrowed === true){
+                    return`${this.title} was borrowed`
+                } else{
+                    return `${this.title} is still available`
+                }
+            }
+        }
+
+        let Book1 = new Book(1, "kiss and kill", "Deji Star", 2024 ,false)
+        let Book2 = new Book(2, "Flash", "Deji Star", 2024 ,false)
+
+        console.log(Book1.getSummary())
+        console.log('')
+        console.log(Book2.getSummary())
+
+        console.log(Book2.borrowBook())
+        console.log(Book1.borrowBook())
+    </script>
+</body>
+</html

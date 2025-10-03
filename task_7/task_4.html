@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      margin: 200px;
+      width: 600px;
+      background: #473131;
+      color: azure;
+    }
+
+    .container{
+        margin: 350px;
+        padding: 0;
+        position: absolute;
+        left: 380px;
+    }
+    .cart {
+      background: #b86d6d;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      box-shadow: 0 0 10px rgba(70, 65, 65, 0.1);
+      margin-bottom: 20px;
+    }
+    h1, h2 {
+      margin-top: 0;
+    }
+    .product {
+      margin-bottom: 10px;
+    }
+    button {
+      margin-left: 10px;
+      background-color: aliceblue;
+      box-shadow: 0 0 5px rgb(255, 255, 255);
+    }
+
+    button:hover{
+        background-color: black;
+        color: aliceblue;
+    }
+    .total {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body class="container">
+
+  <h1> Shopping Cart</h1>
+
+  <div class="cart" id="cartDisplay">
+    <h2>Cart Items</h2>
+    <ul id="cartItems"></ul>
+    <p class="total" id="cartTotal">Total: ₦0</p>
+  </div>
+
+  <script>
+    class Product {
+      constructor(name, price) {
+        this.name = name;
+        this.price = price;
+      }
+    }
+
+
+    class Cart {
+      constructor() {
+        this.items = [];
+      }
+
+      addProduct(product, quantity) {
+        const existing = this.items.find(item => item.product.name === product.name);
+        if (existing) {
+          existing.quantity += quantity;
+        } else {
+          this.items.push({ product, quantity });
+        }
+      }
+
+      removeProduct(productName) {
+        this.items = this.items.filter(item => item.product.name !== productName);
+      }
+
+      getTotal() {
+        const total = this.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+        return total > 100 ? "Free Shipping" : `₦${total.toFixed(2)}`;
+      }
+
+      displayCart() {
+        const cartItemsEl = document.getElementById("cartItems");
+        const cartTotalEl = document.getElementById("cartTotal");
+        cartItemsEl.innerHTML = "";
+
+        this.items.forEach(item => {
+          const li = document.createElement("li");
+          li.className = "product";
+          li.textContent = `${item.product.name} (₦${item.product.price}) x ${item.quantity}`;
+
+          const removeBtn = document.createElement("button");
+          removeBtn.textContent = "Remove";
+          removeBtn.onclick = () => {
+            this.removeProduct(item.product.name);
+            this.displayCart();
+          };
+
+          li.appendChild(removeBtn);
+          cartItemsEl.appendChild(li);
+        });
+
+        cartTotalEl.textContent = "Total: " + this.getTotal();
+      }
+    }
+
+    
+    const apple = new Product("Apple", 700);
+    const banana = new Product("Banana", 200);
+    const milk = new Product("Milk", 500);
+
+    
+    const cart = new Cart();
+
+ 
+    cart.addProduct(apple, 5);   
+    cart.addProduct(banana, 10);  
+    cart.addProduct(milk, 3);   
+
+    cart.displayCart();
+  </script>
+
+</body>
+</html>
