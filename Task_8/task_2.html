@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Typing Effect</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    p {
+      font-size: 24px;
+      font-weight: bold;
+      display: inline-block;
+    }
+    .blink {
+      visibility: hidden;
+    }
+  </style>
+</head>
+<body>
+
+  <p id="text"></p><br><br>
+  <button onclick="startTyping()">Restart Typing</button>
+
+  <script>
+    let sentence = "Welcome to JavaScript Timers!";
+    let index = 0;
+    let textElement = document.getElementById("text");
+    let typingTimeout, blinkInterval;
+
+    function typeText() {
+      if (index < sentence.length) {
+        textElement.textContent += sentence.charAt(index);
+        index++;
+        typingTimeout = setTimeout(typeText, 100); // typing speed
+      } else {
+        startBlinking();
+      }
+    }
+
+    function startTyping() {
+      // reset everything
+      clearTimeout(typingTimeout);
+      clearInterval(blinkInterval);
+      textElement.classList.remove("blink");
+      textElement.style.visibility = "visible";
+      textElement.textContent = "";
+      index = 0;
+      typeText();
+    }
+
+    function startBlinking() {
+      blinkInterval = setInterval(() => {
+        textElement.classList.toggle("blink");
+        textElement.style.visibility =
+          textElement.style.visibility === "hidden" ? "visible" : "hidden";
+      }, 500);
+    }
+
+    // Start automatically when page loads
+    window.onload = startTyping;
+  </script>
+
+</body>
+</html>

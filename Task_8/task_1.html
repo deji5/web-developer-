@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>document</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f8f8f8;
+      margin: 200px;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .slideshow-container {
+      width: 500px;
+      height: 300px;
+      margin: 0 auto;
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(255, 0, 0, 0.2);
+    }
+
+    .slideshow-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .slideshow-container img.active {
+      display: block;
+    }
+
+    .controls {
+      margin-top: 15px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      background-color: #d6c0bc;
+      color: rgb(0, 0, 0);
+      font-size: 16px; 
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #e5533d;
+    }
+  </style>
+</head>
+<body>
+  <h1>Slideshow</h1>
+
+  <div class="slideshow-container">
+    <img src="https://ichef.bbci.co.uk/ace/standard/976/cpsprodpb/14235/production/_100058428_mediaitem100058424.jpg" class="active">
+    <img src="https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D">
+    <img src="https://c.superprof.com/i/a/7413649/3762047/300/20220812134357/photographe-professionnel-donne-cours-photo-debutant-amateur-oriente-pratique.jpg">
+    <img src="https://www.photoweb.fr/espaces/magazine/wp-content/uploads/2018/01/recadrer-ses-photos.jpg">
+    <img src="https://graphpaperpress.com/wp-content/uploads/2016/02/bpg-vs-jpeg-2-1000x600.jpg">
+  </div>
+
+  <div class="controls">
+    <button id="pauseBtn">Pause</button>
+    <button id="resumeBtn">Resume</button>
+  </div>
+
+  <script>
+    let timer = 0;
+    const images = document.querySelectorAll(".slideshow-container img");
+    let slideshow = setInterval(nextImage, 3000);
+
+    function nextImage() {
+      images[timer].classList.remove("active");
+      timer = (timer + 1) % images.length;
+      images[timer].classList.add("active");
+    }
+
+    document.getElementById("pauseBtn").addEventListener("click", () => {
+      clearInterval(slideshow);
+    });
+
+    document.getElementById("resumeBtn").addEventListener("click", () => {
+      clearInterval(slideshow);
+      slideshow = setInterval(nextImage, 3000);
+    });
+  </script>
+</body>
+</html>
