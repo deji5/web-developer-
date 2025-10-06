@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gradebook — Teacher / Student Dashboards</title>
+  <link rel="stylesheet" href="d.css">
+  <style>
+    
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">Gradebook UI</div>
+      <nav class="nav" id="sidebarNav">
+        <!-- links injected -->
+      </nav>
+      <div class="small">Logged in as: <strong id="currentRoleLabel">Teacher</strong></div>
+      <div style="margin-top:18px" class="muted-small">Quick actions</div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn" id="addStudentBtn">+ Add Student</button>
+        <button class="btn ghost" id="seedBtn">Seed Data</button>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="topbar">
+        <div>
+          <h1 style="margin:0;font-size:20px"><span id="dashboardTitle">Teacher Dashboard</span></h1>
+          <div class="muted-small" id="dashboardSub">Manage students, classes and grades</div>
+        </div>
+        <div class="role-switch">
+          <label class="muted-small">Role</label>
+          <select id="roleSelect">
+            <option value="teacher">Teacher</option>
+            <option value="student">Student</option>
+          </select>
+          <label class="muted-small">User</label>
+          <select id="userSelect"></select>
+          <button class="btn ghost" id="logoutBtn">Reset Data</button>
+        </div>
+      </div>
+
+      <div id="mainArea">
+        <!-- dynamic content -->
+      </div>
+
+      <footer>Built with HTML / CSS / JS • Data stored in localStorage under <code>gradebookData</code></footer>
+    </main>
+  </div>
+
+  <!-- modal placeholder -->
+  <div id="modalRoot" style="display:none"></div>
+
+  <script>
+    /* ======= Simple localStorage-backed gradebook ======= */
+    const STORAGE_KEY = 'gradebookData_v1';
+
+    function uid(prefix='id'){return prefix + '_' + Math.random().toString(36).slice(2,9)}
+
+    function seedData(){
+      const data = {
+        students: [
+          {id: 's_amy',first:'Amy',last:'Johnson',email:'amy.j@example.com'},
+          {id: 's_ryan',first:'Ryan',last:'Okoro',email:'ryan.o@example.com'},
+          {id: 's_lina',first:'Lina',last:'Smith',email:'lina.s@example.com'}
+        ],
+        classes: [
+          {id:'c_math',title:'Algebra I',term:'2025 Q1'},
+          {id:'c_eng',title:'English Literature',term:'2025 Q1'},
+          {id:'c_sci',title:'Biology',term:'2025 Q1'}
+        ],
+        grades: [
+          {id:uid('g'),studentId:'s_amy',classId:'c_math',score:92,term:'2025 Q1'},
+          {id:uid('g'),studentId:'s_amy',classId:'c_eng',score:88,term:'2025 Q1'},
+          {id:uid('g'),studentId:'s_ryan',classId:'c_math',score:74,term:'2025 Q1'},
+          {id:uid('g'),studentId:'s_ryan',classId:'c_sci',score:68,term:'2025 Q1'},
+          {id:uid('g'),studentId:'s_lina',classId:'c_eng',score:81,term:'2025 Q1'},
+          {id:uid('g'),studentId:'s_lina',classId:'c_sci',score:95,term:'2025 Q1'}
+        ]
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      renderApp();
+    }
+
+    function loadData(){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return null;
+      try{return JSON.parse(raw)}catch(e){return null}
+    }
+
+    function saveData(d){localStorage.setItem(STORAGE_KEY, JSON.stringify(d));}
+
+    function resetData(){if(confirm('Reset gradebook to empty?')){localStorage.removeItem(STORAGE_KEY);init();}}
+
+    /* ====== Small helpers ====== */
+    function findStudent(id){const d=loadData();return d?.students.find(s=>s.id===id)}
+    function findClass(id){const d=loadData();return d?.classes.find(c=>c.id===id)}
+
+    function calcAverageForStudent(studentId){const d=loadData();if(!d) return 0;const list = d.grades.filter(g=>g.studentId===studentId).map(g=>g.score);if(!list.length) return null;return (list.reduce((a,b)=>a+b,0)/list.length).toFixed(1)}
+
+    function calcOverallAverage(){const d=loadData();if(!d || !d.grades.length) return 0;const avg = d.grades.reduce((a,b)=>a+b.score,0)/d.grades.length;return avg.toFixed(1)}
+
+    function gradeLetter(score){if(score>=90) return 'A'; if(score>=80) return 'B'; if(score>=70) return 'C'; if(score>=60) return 'D'; return 'F'}
+
+    /* ====== Rendering ====== */
+    const sidebarNav = document.getElementById('sidebarNav');
+    const mainArea = document.getElementById('mainArea');
+    const roleSelect = document.getElementById('roleSelect');
+    const userSelect = document.getElementById('userSelect');
+    const currentRoleLabel = document.getElementById('currentRoleLabel');
+    const dashboardTitle = document.getElementById('dashboardTitle');
+    const dashboardSub = document.getElementById('dashboardSub');
+
+    function renderSidebar(){
+      const role = roleSelect.value;
+      sidebarNav.innerHTML='';
+      let links=[];
+      if(role==='teacher') links = ['Dashboard','Students','Gradebook','Reports','Settings','Help'];
+      else links = ['My Dashboard','My Courses','Settings','Help'];
+      links.forEach((l,i)=>{
+        const a = document.createElement('a');a.href='#';a.textContent=l; if(i===0) a.classList.add('active');
+        a.addEventListener('click', (e)=>{e.preventDefault(); [...sidebarNav.querySelectorAll('a')].forEach(x=>x.classList.remove('active')); a.classList.add('active'); renderMainSection(l)});
+        sidebarNav.appendChild(a);
+      })
+    }
+
+    function renderMainSection(name){
+      if(roleSelect.value==='teacher'){
+        dashboardTitle.textContent = 'Teacher Dashboard';
+        dashboardSub.textContent = 'Manage students, classes and grades';
+      } else {dashboardTitle.textContent = 'Student Dashboard'; dashboardSub.textContent = 'View your courses and grades'}
+      // basic routing
+      switch(name){
+        case 'Students': renderStudents();break;
+        case 'Gradebook': renderGradebook();break;
+        case 'Reports': renderReports();break;
+        case 'My Courses': renderStudentCourses();break;
+        case 'My Dashboard': renderStudentHome();break;
+        default: if(roleSelect.value==='teacher') renderTeacherHome(); else renderStudentHome();
+      }
+    }
+
+    /* ----- Teacher Home (stat cards + quick roster) ----- */
+    function renderTeacherHome(){
+      const d = loadData()||{students:[],classes:[],grades:[]};
+      mainArea.innerHTML = '';
+      const row = document.createElement('div');row.className='row';
+      const card1 = statCard('Total Students', d.students.length);
+      const card2 = statCard('Active Classes', d.classes.length);
+      const card3 = statCard('Average Grade', calcOverallAverage());
+      const card4 = statCard('Assignments Due', Math.max(0, Math.floor(Math.random()*6))); // placeholder
+      row.appendChild(card1);row.appendChild(card2);row.appendChild(card3);row.appendChild(card4);
+      mainArea.appendChild(row);
+
+      // roster quick table
+      const wrap = document.createElement('div');wrap.className='table-wrap';
+      const header = document.createElement('div');header.style.display='flex';header.style.justifyContent='space-between';header.style.alignItems='center';
+      const left = document.createElement('div');left.className='search-row';
+      const search = document.createElement('input');search.placeholder='Search students by name or email';search.id='studentSearch';left.appendChild(search);
+      const addBtn = document.createElement('button');addBtn.className='btn';addBtn.textContent='Add New Student';addBtn.addEventListener('click',()=>openStudentModal());
+      header.appendChild(left);header.appendChild(addBtn);
+      wrap.appendChild(header);
+      const table = document.createElement('table');table.innerHTML=`<thead><tr><th>Name</th><th>Email</th><th>Avg Grade</th><th class="center">Actions</th></tr></thead>`;
+      const tbody = document.createElement('tbody');
+      function refreshTbody(filter=''){
+        tbody.innerHTML='';
+        const rows = (d.students||[]).filter(s=>{
+          const q=filter.trim().toLowerCase(); if(!q) return true; return (s.first+' '+s.last+' '+(s.email||'')).toLowerCase().includes(q)
+        });
+        rows.forEach(s=>{
+          const tr = document.createElement('tr');
+          const nameTD = document.createElement('td');nameTD.textContent = s.first + ' ' + s.last;
+          const emailTD = document.createElement('td');emailTD.textContent = s.email || '-';
+          const avg = calcAverageForStudent(s.id);
+          const avgTD = document.createElement('td'); avgTD.innerHTML = avg===null?'<span class="muted">No grades</span>':`<span class="pill">${avg}%</span>`;
+          const actionsTD = document.createElement('td'); actionsTD.className='center';
+          const viewBtn = document.createElement('button');viewBtn.className='icon-btn';viewBtn.title='View'; viewBtn.innerHTML='📄'; viewBtn.addEventListener('click',()=>openStudentDetails(s.id));
+          const editBtn = document.createElement('button');editBtn.className='icon-btn';editBtn.title='Edit'; editBtn.innerHTML='✏️'; editBtn.addEventListener('click',()=>openStudentModal(s.id));
+          const delBtn = document.createElement('button');delBtn.className='icon-btn';delBtn.title='Delete'; delBtn.innerHTML='🗑️'; delBtn.addEventListener('click',()=>deleteStudent(s.id));
+          actionsTD.append(viewBtn,editBtn,delBtn);
+          tr.append(nameTD,emailTD,avgTD,actionsTD);
+          tbody.appendChild(tr);
+        });
+      }
+      refreshTbody();
+      table.appendChild(tbody);wrap.appendChild(table);mainArea.appendChild(wrap);
+      document.getElementById('studentSearch').addEventListener('input',(e)=>refreshTbody(e.target.value));
+    }
+
+    function statCard(title,val){const c=document.createElement('div');c.className='card';c.innerHTML=`<h3>${title}</h3><div class="value">${val}</div>`;return c}
+
+    /* ----- Students CRUD ----- */
+    function renderStudents(){
+      const d=loadData()||{students:[]};
+      mainArea.innerHTML='';
+      mainArea.appendChild(statCard('Students', d.students.length));
+      // reuse teacher home table
+      renderTeacherHome();
+    }
+
+    function openStudentModal(studentId=null){
+      const d = loadData()||{students:[]};
+      const editing = d.students.find(s=>s.id===studentId);
+      const modalRoot = document.getElementById('modalRoot'); modalRoot.style.display='block';
+      modalRoot.innerHTML = `<div class="modal-backdrop" id="modalBD">
+        <div class="modal">
+          <h2>${editing? 'Edit Student':'Add New Student'}</h2>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div class="form-row">
+              <div class="col"><input id="f_first" placeholder="First name" value="${editing?editing.first:''}"></div>
+              <div class="col"><input id="f_last" placeholder="Last name" value="${editing?editing.last:''}"></div>
+            </div>
+            <input id="f_email" placeholder="Email" value="${editing?editing.email:''}">
+            <div style="display:flex;gap:8px;justify-content:flex-end">
+              <button class="btn ghost" id="cancelModal">Cancel</button>
+              <button class="btn" id="saveStudent">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+      document.getElementById('cancelModal').addEventListener('click', closeModal);
+      document.getElementById('modalBD').addEventListener('click',(e)=>{if(e.target.id==='modalBD') closeModal()});
+      document.getElementById('saveStudent').addEventListener('click',()=>{
+        const first = document.getElementById('f_first').value.trim(); const last = document.getElementById('f_last').value.trim(); const email = document.getElementById('f_email').value.trim();
+        if(!first || !last){alert('Please provide first and last name'); return}
+        if(editing){editing.first=first;editing.last=last;editing.email=email} else {d.students.push({id:uid('s'),first,last,email})}
+        saveData(d); closeModal(); renderApp();
+      });
+    }
+
+    function closeModal(){document.getElementById('modalRoot').style.display='none';document.getElementById('modalRoot').innerHTML='';}
+
+    function deleteStudent(id){if(!confirm('Delete this student? This will also remove grades.')) return;const d=loadData();d.students = d.students.filter(s=>s.id!==id);d.grades = d.grades.filter(g=>g.studentId!==id);saveData(d);renderApp();}
+
+    function openStudentDetails(studentId){
+      const d=loadData();const s=findStudent(studentId);
+      const modalRoot = document.getElementById('modalRoot'); modalRoot.style.display='block';
+      const studentGrades = d.grades.filter(g=>g.studentId===studentId).map(g=>({...g,klass:findClass(g.classId)}));
+      modalRoot.innerHTML = `<div class="modal-backdrop" id="modalBD">
+        <div class="modal">
+          <h2>${s.first} ${s.last} — Details</h2>
+          <div class="muted-small">Email: ${s.email||'-'}</div>
+          <div style="margin-top:12px">
+            <h3 style="margin:6px 0">Grades</h3>
+            <table style="width:100%"><thead><tr><th>Course</th><th>Term</th><th>Score</th><th>Letter</th></tr></thead>
+            <tbody>${studentGrades.map(g=>`<tr><td>${g.klass?.title||'—'}</td><td>${g.term}</td><td>${g.score}</td><td>${gradeLetter(g.score)}</td></tr>`).join('')}</tbody></table>
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="btn ghost" id="closeDtl">Close</button></div>
+        </div>
+      </div>`;
+      document.getElementById('closeDtl').addEventListener('click',closeModal);
+      document.getElementById('modalBD').addEventListener('click',(e)=>{if(e.target.id==='modalBD') closeModal()});
+    }
+
+    /* ----- Gradebook (teacher) ----- */
+    function renderGradebook(){
+      const d=loadData()||{grades:[],students:[],classes:[]};
+      mainArea.innerHTML='';
+      mainArea.appendChild(statCard('Overall Average', calcOverallAverage()));
+      // controls
+      const controls = document.createElement('div');controls.style.display='flex';controls.style.gap='8px';controls.style.marginTop='12px';
+      const clsSelect = document.createElement('select'); clsSelect.innerHTML = '<option value="">All Classes</option>' + (d.classes||[]).map(c=>`<option value="${c.id}">${c.title}</option>`).join('');
+      const termSelect = document.createElement('select'); const terms = [...new Set((d.grades||[]).map(g=>g.term))]; termSelect.innerHTML = '<option value="">All Terms</option>' + terms.map(t=>`<option value="${t}">${t}</option>`).join('');
+      const addGradeBtn = document.createElement('button'); addGradeBtn.className='btn'; addGradeBtn.textContent='Add Grade'; addGradeBtn.addEventListener('click',()=>openGradeModal());
+      controls.appendChild(clsSelect);controls.appendChild(termSelect);controls.appendChild(addGradeBtn); mainArea.appendChild(controls);
+
+      const wrap=document.createElement('div');wrap.className='table-wrap';wrap.style.marginTop='10px';
+      const table=document.createElement('table');table.innerHTML=`<thead><tr><th>Student</th><th>Class</th><th>Term</th><th>Score</th><th>Letter</th><th class="center">Actions</th></tr></thead>`;
+      const tbody=document.createElement('tbody'); function refresh(gfilter={},){tbody.innerHTML='';
+        const rows = (d.grades||[]).filter(g=>{if(gfilter.classId && gfilter.classId!=='') if(g.classId!==gfilter.classId) return false; if(gfilter.term && gfilter.term!=='') if(g.term!==gfilter.term) return false; return true});
+        rows.forEach(g=>{
+          const tr=document.createElement('tr');
+          const s=findStudent(g.studentId)||{first:'Unknown',last:''}; const c=findClass(g.classId)||{title:'Unknown'};
+          tr.innerHTML = `<td>${s.first} ${s.last}</td><td>${c.title}</td><td>${g.term}</td><td>${g.score}</td><td><span class="pill grade-${gradeLetter(g.score)}">${gradeLetter(g.score)}</span></td><td class="center"></td>`;
+          const actionsTD = tr.querySelector('td:last-child');
+          const edit = document.createElement('button'); edit.className='icon-btn'; edit.textContent='✏️'; edit.addEventListener('click',()=>openGradeModal(g.id));
+          const del = document.createElement('button'); del.className='icon-btn'; del.textContent='🗑️'; del.addEventListener('click',()=>{if(confirm('Delete grade?')){d.grades = d.grades.filter(x=>x.id!==g.id);saveData(d);renderApp();}});
+          actionsTD.append(edit,del);
+          tbody.appendChild(tr);
+        });
+      }
+      refresh({}); table.appendChild(tbody); wrap.appendChild(table); mainArea.appendChild(wrap);
+      clsSelect.addEventListener('change',()=>refresh({classId:clsSelect.value,term:termSelect.value})); termSelect.addEventListener('change',()=>refresh({classId:clsSelect.value,term:termSelect.value}));
+    }
+
+    function openGradeModal(gradeId=null){
+      const d = loadData()||{students:[],classes:[],grades:[]};
+      const editing = d.grades.find(g=>g.id===gradeId);
+      const modalRoot = document.getElementById('modalRoot'); modalRoot.style.display='block';
+      modalRoot.innerHTML = `<div class="modal-backdrop" id="modalBD">
+        <div class="modal">
+          <h2>${editing? 'Edit Grade':'Add Grade'}</h2>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <select id="g_student">${d.students.map(s=>`<option value="${s.id}" ${editing && editing.studentId===s.id? 'selected':''}>${s.first} ${s.last}</option>`).join('')}</select>
+            <select id="g_class">${d.classes.map(c=>`<option value="${c.id}" ${editing && editing.classId===c.id? 'selected':''}>${c.title}</option>`).join('')}</select>
+            <input id="g_term" placeholder="Term (e.g. 2025 Q1)" value="${editing?editing.term:''}">
+            <input id="g_score" placeholder="Score (0-100)" value="${editing?editing.score:''}" type="number" min="0" max="100">
+            <div style="display:flex;gap:8px;justify-content:flex-end">
+              <button class="btn ghost" id="cancelGrade">Cancel</button>
+              <button class="btn" id="saveGrade">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+      document.getElementById('cancelGrade').addEventListener('click', closeModal);
+      document.getElementById('modalBD').addEventListener('click',(e)=>{if(e.target.id==='modalBD') closeModal()});
+      document.getElementById('saveGrade').addEventListener('click',()=>{
+        const studentId = document.getElementById('g_student').value; const classId = document.getElementById('g_class').value; const term = document.getElementById('g_term').value.trim(); const score = Number(document.getElementById('g_score').value);
+        if(!studentId||!classId||!term||isNaN(score)){alert('Please fill all grade fields');return}
+        if(editing){editing.studentId=studentId;editing.classId=classId;editing.term=term;editing.score=score}else{d.grades.push({id:uid('g'),studentId,classId,term,score})}
+        saveData(d); closeModal(); renderApp();
+      });
+    }
+
+    /* ----- Reports (very simple) ----- */
+    function renderReports(){
+      const d = loadData()||{students:[],classes:[],grades:[]};
+      mainArea.innerHTML='';
+      mainArea.appendChild(statCard('Reports (Simple)', ' '));
+      const top = [...d.students].map(s=>({student:s,avg:calcAverageForStudent(s.id)})).sort((a,b)=> (b.avg||0)-(a.avg||0)).slice(0,5);
+      const wrap=document.createElement('div');wrap.className='table-wrap';wrap.innerHTML = `<h3>Top students</h3><ol>${top.map(t=>`<li>${t.student.first} ${t.student.last} — ${t.avg||'No grades'}</li>`).join('')}</ol>`;
+      mainArea.appendChild(wrap);
+    }
+
+    /* ----- Student dashboards ----- */
+    function renderStudentHome(){
+      const d = loadData()||{students:[],classes:[],grades:[]};
+      mainArea.innerHTML='';
+      const selectedStudentId = userSelect.value || (d.students[0] && d.students[0].id);
+      const s = findStudent(selectedStudentId);
+      if(!s){mainArea.innerHTML='<div class="muted">No student selected</div>';return}
+      const avg = calcAverageForStudent(s.id);
+      const row=document.createElement('div');row.className='row';row.appendChild(cardWithText('Overall Grade Average', avg===null?'-':avg+'%'));row.appendChild(cardWithText('Courses Enrolled', d.grades.filter(g=>g.studentId===s.id).length)); mainArea.appendChild(row);
+      // grades table with term filter
+      const wrap=document.createElement('div');wrap.className='table-wrap';wrap.style.marginTop='10px';
+      const controls=document.createElement('div');controls.style.display='flex';controls.style.gap='8px';
+      const termSelect=document.createElement('select'); const terms=[...new Set(d.grades.filter(g=>g.studentId===s.id).map(g=>g.term))]; termSelect.innerHTML = '<option value="">All Terms</option>' + terms.map(t=>`<option>${t}</option>`).join(''); controls.appendChild(termSelect);
+      wrap.appendChild(controls);
+      const table=document.createElement('table');table.innerHTML=`<thead><tr><th>Course</th><th>Term</th><th>Score</th><th>Letter</th><th></th></tr></thead>`;
+      const tbody=document.createElement('tbody'); function refresh(termFilter=''){tbody.innerHTML=''; const rows = d.grades.filter(g=>g.studentId===s.id && (termFilter?g.term===termFilter:true)); rows.forEach(g=>{const c=findClass(g.classId)||{}; const tr=document.createElement('tr'); tr.innerHTML=`<td>${c.title||'—'}</td><td>${g.term}</td><td>${g.score}</td><td><span class="pill grade-${gradeLetter(g.score)}">${gradeLetter(g.score)}</span></td><td><a href="#" class="muted-small" data-id="${g.id}">View Details</a></td>`; tbody.appendChild(tr)});}
+      refresh(''); table.appendChild(tbody); wrap.appendChild(table); mainArea.appendChild(wrap);
+      termSelect.addEventListener('change',()=>refresh(termSelect.value));
+    }
+
+    function cardWithText(title,text){const c=document.createElement('div');c.className='card';c.innerHTML=`<h3>${title}</h3><div class="value">${text}</div>`;return c}
+
+    function renderStudentCourses(){renderStudentHome();}
+
+    /* ----- bootstrapping UI controls ----- */
+    document.getElementById('addStudentBtn').addEventListener('click',()=>openStudentModal());
+    document.getElementById('seedBtn').addEventListener('click',()=>{if(confirm('Seed sample data? This will overwrite existing data.')) seedData()});
+    document.getElementById('logoutBtn').addEventListener('click',()=>{if(confirm('Reset stored data?')){localStorage.removeItem(STORAGE_KEY);init()}})
+
+    roleSelect.addEventListener('change',()=>{currentRoleLabel.textContent = roleSelect.value==='teacher'?'Teacher':'Student'; renderSidebar(); renderApp();});
+    userSelect.addEventListener('change',()=>{renderApp();});
+
+    function populateUserSelect(){const d=loadData()||{students:[]}; userSelect.innerHTML=''; const role = roleSelect.value; if(role==='student'){d.students.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.first+' '+s.last; userSelect.appendChild(o)})} else { // teacher
+        const o = document.createElement('option'); o.value='teacher'; o.textContent='Teacher (you)'; userSelect.appendChild(o);
+    }}
+
+    function init(){const raw = loadData(); if(!raw) seedData(); else renderApp();}
+
+    function renderApp(){
+      renderSidebar(); populateUserSelect(); const role = roleSelect.value; currentRoleLabel.textContent = role==='teacher'? 'Teacher':'Student';
+      // ensure userSelect has something
+      if(userSelect.options.length===0) populateUserSelect();
+      // set first link active
+      [...sidebarNav.querySelectorAll('a')].forEach((a,i)=>{if(i===0) a.classList.add('active'); else a.classList.remove('active')});
+      renderMainSection( [...sidebarNav.querySelectorAll('a')].find(a=>a.classList.contains('active'))?.textContent || '' );
+    }
+
+    // expose for dev console
+    window.gradebook = {loadData,saveData,seedData,resetData};
+
+    // init
+    init();
+  </script>
+</body>
+</html>
