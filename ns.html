@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EduGrade — Web Gradebook (Local)</title>
+  <style>
+    /* Design tokens inspired by provided designs */
+    :root{
+      --bg:#0f1724; /* dark teacher sidebar */
+      --card:#0b1220;
+      --accent:#6ee7b7; /* green-ish */
+      --muted:#94a3b8;
+      --panel:#0b1422;
+      --surface:#0f1724;
+      --danger:#ff6b6b;
+      --orange:#f59e0b;
+      --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:var(--font-sans);background:#f4f6fb;color:#e6eef6}
+    a{color:inherit;text-decoration:none}
+
+    /* Layout */
+    .app{display:flex;min-height:100vh}
+
+    /* Teacher sidebar */
+    .sidebar{width:260px;background:linear-gradient(180deg,var(--bg),#071226);padding:24px;color:#dbeafe;display:flex;flex-direction:column;gap:18px}
+    .sidebar .brand{font-weight:700;font-size:18px;display:flex;align-items:center;gap:8px}
+    .sidebar nav{display:flex;flex-direction:column;gap:8px}
+    .nav-item{padding:10px;border-radius:8px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+    .nav-item.active{background:#07172b;color:#e6eef6}
+    .nav-item:hover{background:#0a1b2e;color:#fff;cursor:pointer}
+
+    /* Student simplified sidebar */
+    .student-sidebar{width:80px;background:#0b1220;padding:16px;display:flex;flex-direction:column;gap:14px;align-items:center}
+    .ss-btn{writing-mode:vertical-rl;transform:rotate(180deg);font-size:12px;color:var(--muted);padding:6px 8px;border-radius:8px}
+
+    /* Main content */
+    .main{flex:1;padding:28px;background:linear-gradient(180deg,#eef3fb, #f4f6fb)}
+    .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .search{padding:8px 12px;border-radius:10px;border:1px solid #e2e8f0;background:white;color:#0b1220}
+
+    /* Cards */
+    .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+    .card{background:#fff;padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(8,15,30,0.06);color:#0b1220}
+    .card h3{margin:0;font-size:13px;color:#64748b}
+    .card p{font-size:22px;margin:8px 0 0;font-weight:700}
+
+    /* Table */
+    .table{background:#fff;border-radius:10px;padding:12px;color:#0b1220}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px;text-align:left;border-bottom:1px solid #eef2f7}
+    th{font-size:13px;color:#475569}
+    td .actions{display:flex;gap:8px}
+    .btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
+    .btn.primary{background:var(--accent);color:#033;}
+    .btn.ghost{background:transparent;border:1px solid #cbd5e1;color:#0b1220}
+    .muted{color:#94a3b8;font-size:13px}
+
+    /* Forms and modals */
+    .panel{background:#fff;padding:14px;border-radius:12px;color:#0b1220}
+    .form-row{display:flex;gap:8px;margin-bottom:8px}
+    .form-row input,.form-row select{flex:1;padding:8px;border-radius:8px;border:1px solid #e6eef6}
+    .modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:600px;max-width:94%;z-index:40}
+    .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.45)}
+
+    /* Student dashboard styles */
+    .student-main{padding:18px}
+    .grade-pill{display:inline-block;padding:6px 10px;border-radius:8px;color:white;font-weight:700}
+    .grade-A{background:#16a34a}
+    .grade-B{background:#4ade80}
+    .grade-C{background:#f59e0b}
+    .grade-D{background:#fb923c}
+    .grade-F{background:#ef4444}
+
+    /* Responsive */
+    @media(max-width:900px){
+      .cards{grid-template-columns:repeat(2,1fr)}
+      .sidebar{display:none}
+      .student-sidebar{display:none}
+      .main{padding:12px}
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="app">
+    <!-- Left: Sidebar (teacher) or small student sidebar shown dynamically -->
+    <div id="teacherSidebar" class="sidebar" style="display:none">
+      <div class="brand">📚 EduGrade</div>
+      <div class="muted">Admin</div>
+      <nav>
+        <div class="nav-item" data-route="#/teacher/dashboard">Dashboard</div>
+        <div class="nav-item" data-route="#/teacher/students">Students</div>
+        <div class="nav-item" data-route="#/teacher/gradebook">Gradebook</div>
+        <div class="nav-item" data-route="#/teacher/reports">Reports</div>
+        <div class="nav-item" data-route="#/teacher/settings">Settings</div>
+        <div class="nav-item" id="logoutBtn">Logout</div>
+      </nav>
+      <div style="margin-top:auto;font-size:13px;color:var(--muted)">admin@edugrade.com</div>
+    </div>
+
+    <div id="studentSidebar" class="student-sidebar" style="display:none">
+      <div class="ss-btn" data-route="#/student/dashboard">My Dashboard</div>
+      <div class="ss-btn" data-route="#/student/courses">My Courses</div>
+      <div class="ss-btn" data-route="#/student/settings">Settings</div>
+      <div class="ss-btn" id="logoutBtn2">Logout</div>
+    </div>
+
+    <!-- Main area where pages render -->
+    <div class="main" id="main">
+      <!-- We'll render pages into #view -->
+      <div id="view"></div>
+    </div>
+  </div>
+
+  <template id="loginTemplate">
+    <div style="max-width:900px;margin:0 auto;display:flex;gap:24px;align-items:stretch">
+      <div style="flex:1;background:linear-gradient(180deg,#0b1220,#071226);padding:30px;border-radius:12px;color:#e6eef6">
+        <h2>Welcome back</h2>
+        <p class="muted">Sign in to continue to EduGrade — Teacher or Student</p>
+        <div style="margin-top:14px">
+          <label class="muted">Login type</label>
+          <select id="loginType" style="width:100%;padding:10px;border-radius:8px;margin-top:6px">
+            <option value="teacher">Teacher / Admin</option>
+            <option value="student">Student</option>
+          </select>
+        </div>
+        <div style="margin-top:12px">
+          <input id="loginUser" placeholder="Email or username" style="width:100%;padding:10px;border-radius:8px;border:none;margin-bottom:8px" />
+          <input id="loginPass" type="password" placeholder="Password" style="width:100%;padding:10px;border-radius:8px;border:none" />
+        </div>
+        <div style="margin-top:12px;display:flex;gap:10px">
+          <button id="loginBtn" class="btn primary">Sign in</button>
+          <button id="fillAlice" class="btn ghost">Use Demo Student</button>
+        </div>
+      </div>
+      <div style="flex:1;background:#fff;padding:22px;border-radius:12px;color:#0b1220">
+        <h3>Quick Preview</h3>
+        <p class="muted">Teacher: admin / admin123</p>
+        <p class="muted">Student: alice@example.com / student123</p>
+        <div style="margin-top:12px">
+          <h4>Sample Courses</h4>
+          <ul id="sampleCourses" class="muted"></ul>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- Teacher Dashboard template -->
+  <template id="teacherDashboard">
+    <div>
+      <div class="topbar">
+        <div>
+          <h2>Teacher Dashboard</h2>
+          <div class="muted">Overview & quick actions</div>
+        </div>
+        <div>
+          <input id="teacherSearch" class="search" placeholder="Search students or courses...">
+        </div>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <h3>Total Students</h3>
+          <p id="statTotalStudents">—</p>
+        </div>
+        <div class="card">
+          <h3>Active Classes</h3>
+          <p id="statActiveClasses">—</p>
+        </div>
+        <div class="card">
+          <h3>Average Grade</h3>
+          <p id="statAvgGrade">—</p>
+        </div>
+        <div class="card">
+          <h3>Assignments Due</h3>
+          <p id="statDue">0</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <h3 style="margin:0">Students</h3>
+          <div style="display:flex;gap:8px">
+            <button id="addStudentBtn" class="btn primary">Add New Student</button>
+            <button data-route="#/teacher/students" class="btn ghost">Manage Students</button>
+          </div>
+        </div>
+
+        <div id="studentsTableContainer"></div>
+      </div>
+    </div>
+  </template>
+
+  <!-- Students Management page -->
+  <template id="studentsPage">
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h2>Students Management</h2>
+        <div style="display:flex;gap:8px">
+          <input id="stuSearch" class="search" placeholder="Search students..." />
+          <button id="newStudent" class="btn primary">Add New Student</button>
+        </div>
+      </div>
+
+      <div class="table" id="studentsTable"></div>
+    </div>
+  </template>
+
+  <!-- Gradebook page -->
+  <template id="gradebookPage">
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h2>Gradebook</h2>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select id="gradeCourseSelect" style="padding:8px;border-radius:8px">
+          </select>
+          <button id="exportGrades" class="btn ghost">Export JSON</button>
+        </div>
+      </div>
+
+      <div class="panel" id="gradebookTable"></div>
+    </div>
+  </template>
+
+  <!-- Reports page -->
+  <template id="reportsPage">
+    <div>
+      <h2>Reports</h2>
+      <div class="panel">
+        <h4>Class averages</h4>
+        <div id="reportsContent" class="muted"></div>
+      </div>
+    </div>
+  </template>
+
+  <!-- Teacher Settings page -->
+  <template id="teacherSettings">
+    <div>
+      <h2>Settings</h2>
+      <div class="panel">
+        <h4>Admin info</h4>
+        <div class="form-row"><input id="adminName" placeholder="Name" /><input id="adminEmail" placeholder="Email" /></div>
+        <div style="margin-top:8px"><button id="saveAdmin" class="btn primary">Save</button></div>
+      </div>
+    </div>
+  </template>
+
+  <!-- Student Dashboard template -->
+  <template id="studentDashboard">
+    <div class="student-main">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div>
+          <h2>Welcome, <span id="stuNameSpan"></span></h2>
+          <div class="muted">Student Dashboard</div>
+        </div>
+        <div style="text-align:right">
+          <div class="card" style="padding:8px 12px;border-radius:10px;display:inline-block;margin-bottom:6px">
+            <div class="muted">Overall Grade Average</div>
+            <div id="stuOverallAvg">—</div>
+          </div>
+          <div class="muted">Courses Enrolled: <span id="stuCoursesCnt">—</span></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h4>My Courses</h4>
+        <div id="stuCoursesList"></div>
+      </div>
+    </div>
+  </template>
+
+  <!-- Student Courses page -->
+  <template id="studentCourses">
+    <div>
+      <h2>My Courses</h2>
+      <div class="panel">
+        <div id="stuCourseDetails"></div>
+      </div>
+    </div>
+  </template>
+
+  <!-- Modals: Add/Edit Student -->
+  <div id="modalRoot"></div>
+
+  <script>
+  // -----------------------------
+  // Simple single-file gradebook SPA
+  // -----------------------------
+
+  // Helper: default sample data (fixed typos from user's sample)
+  const defaultData = {
+    courses:[
+      {id:1,courseName:'Mathematics',teacher:'Mr. Smith',credits:3},
+      {id:2,courseName:'English',teacher:'Mrs. Brown',credits:3},
+      {id:3,courseName:'Science',teacher:'Dr. Lee',credits:4},
+      {id:4,courseName:'History',teacher:'Ms. Davis',credits:3},
+      {id:5,courseName:'Physical Education',teacher:'Coach Williams',credits:2}
+    ],
+    students:[
+      {id:1,name:'Alice Johnson',email:'alice@example.com',password:'student123',enrolledCourses:[1,2,3]},
+      {id:2,name:'Brian Okafor',email:'brian@example.com',password:'student123',enrolledCourses:[1,2,3]},
+      {id:3,name:'Chinwe Adeyemi',email:'chinwe@example.com',password:'student123',enrolledCourses:[1,2,3,4]},
+      {id:4,name:'David Okonkwo',email:'david@example.com',password:'student123',enrolledCourses:[1,2,3]},
+      {id:5,name:'Esther Nwankwo',email:'esther@example.com',password:'student123',enrolledCourses:[1,2,3,5]}
+    ],
+    grades:[
+      {studentId:1,courseId:1,grade:85},{studentId:1,courseId:2,grade:92},{studentId:1,courseId:3,grade:78},
+      {studentId:2,courseId:1,grade:74},{studentId:2,courseId:2,grade:88},{studentId:2,courseId:3,grade:90},
+      {studentId:3,courseId:1,grade:95},{studentId:3,courseId:2,grade:87},{studentId:3,courseId:3,grade:91},{studentId:3,courseId:4,grade:89},
+      {studentId:4,courseId:1,grade:68},{studentId:4,courseId:2,grade:75},{studentId:4,courseId:3,grade:82},
+      {studentId:5,courseId:1,grade:91},{studentId:5,courseId:2,grade:89},{studentId:5,courseId:3,grade:94},{studentId:5,courseId:5,grade:88}
+    ],
+    admins:[{username:'admin',password:'admin123',name:'Admin User',email:'admin@edugrade.com'}]
+  };
+
+  // Storage wrapper
+  const STORE_KEY = 'edugrade_data_v1';
+  function loadData(){
+    const raw = localStorage.getItem(STORE_KEY);
+    if(!raw){ localStorage.setItem(STORE_KEY,JSON.stringify(defaultData)); return structuredClone(defaultData);} 
+    try{return JSON.parse(raw);}catch(e){localStorage.setItem(STORE_KEY,JSON.stringify(defaultData));return structuredClone(defaultData)}
+  }
+  function saveData(d){ localStorage.setItem(STORE_KEY,JSON.stringify(d)); }
+
+  let DATA = loadData();
+
+  // Current user session
+  function setCurrentUser(u){ localStorage.setItem('edugrade_current', JSON.stringify(u || null)); }
+  function getCurrentUser(){ try{return JSON.parse(localStorage.getItem('edugrade_current'))}catch(e){return null} }
+
+  // Simple router using hash
+  function navigate(hash){ window.location.hash = hash; }
+
+  // Utility: calculate average grade for class or student
+  function average(arr){ if(!arr || arr.length===0) return null; return Math.round((arr.reduce((a,b)=>a+b,0)/arr.length)*100)/100 }
+
+  // Render functions
+  function renderLogin(){
+    const tpl = document.getElementById('loginTemplate').content.cloneNode(true);
+    document.getElementById('view').innerHTML='';
+    document.getElementById('view').appendChild(tpl);
+    // fill sample courses
+    const list = document.getElementById('sampleCourses'); DATA.courses.forEach(c=>{const li=document.createElement('li');li.textContent=c.courseName;list.appendChild(li)});
+    document.getElementById('fillAlice').addEventListener('click',()=>{document.getElementById('loginUser').value='alice@example.com';document.getElementById('loginPass').value='student123';document.getElementById('loginType').value='student'})
+
+    document.getElementById('loginBtn').addEventListener('click',()=>{
+      const type=document.getElementById('loginType').value, user=document.getElementById('loginUser').value.trim(),pass=document.getElementById('loginPass').value;
+      if(type==='teacher'){
+        const admin = DATA.admins.find(a => (a.username===user || a.email===user) && a.password===pass);
+        if(admin){ setCurrentUser({role:'teacher',username:admin.username,name:admin.name}); navigate('#/teacher/dashboard'); location.reload(); return; }
+        alert('Invalid admin credentials (try admin/admin123)');
+      } else {
+        const stu = DATA.students.find(s => (s.email===user || s.email===user.toLowerCase()) && s.password===pass);
+        if(stu){ setCurrentUser({role:'student',id:stu.id,name:stu.name,email:stu.email}); navigate('#/student/dashboard'); location.reload(); return; }
+        alert('Invalid student credentials (try alice@example.com/student123)');
+      }
+    });
+  }
+
+  // show sidebar according to role
+  function showSidebarsFor(role){
+    document.getElementById('teacherSidebar').style.display = role==='teacher'? 'flex' : 'none';
+    document.getElementById('studentSidebar').style.display = role==='student'? 'flex' : 'none';
+    Array.from(document.querySelectorAll('.nav-item')).forEach(it=>it.addEventListener('click',()=>{navigate(it.dataset.route); location.reload();}))
+    document.getElementById('logoutBtn').addEventListener('click',()=>{setCurrentUser(null);navigate('#/login'); location.reload();});
+    document.getElementById('logoutBtn2').addEventListener('click',()=>{setCurrentUser(null);navigate('#/login'); location.reload();});
+  }
+
+  // Teacher dashboard render
+  function renderTeacherDashboard(){
+    const tpl = document.getElementById('teacherDashboard').content.cloneNode(true);
+    document.getElementById('view').innerHTML='';
+    document.getElementById('view').appendChild(tpl);
+    document.getElementById('statTotalStudents').textContent = DATA.students.length;
+    document.getElementById('statActiveClasses').textContent = DATA.courses.length;
+    // compute overall average
+    const grades = DATA.grades.map(g=>g.grade);
+    document.getElementById('statAvgGrade').textContent = grades.length? average(grades) + '%' : '—';
+
+    // students mini table
+    const container = document.getElementById('studentsTableContainer');
+    container.innerHTML = buildStudentsTableHtml(DATA.students);
+    document.getElementById('addStudentBtn').addEventListener('click',()=>openStudentModal());
+
+    // search
+    document.getElementById('teacherSearch').addEventListener('input', (e)=>{
+      const q=e.target.value.toLowerCase(); const filtered = DATA.students.filter(s=>s.name.toLowerCase().includes(q)||s.email.toLowerCase().includes(q));
+      container.innerHTML = buildStudentsTableHtml(filtered);
+    });
+    attachStudentActions();
+  }
+
+  function buildStudentsTableHtml(students){
+    let html = '<table><thead><tr><th>Name</th><th>Email</th><th>Enrolled</th><th>Average</th><th>Actions</th></tr></thead><tbody>';
+    students.forEach(s=>{
+      const sgrades = DATA.grades.filter(g=>g.studentId===s.id).map(g=>g.grade);
+      const avg = sgrades.length? average(sgrades)+'%':'—';
+      html += `<tr data-id="${s.id}"><td>${s.name}</td><td>${s.email}</td><td>${s.enrolledCourses.length}</td><td>${avg}</td><td><div class="actions"><button class="btn ghost viewBtn">View</button> <button class="btn ghost editBtn">Edit</button> <button class="btn" style="background:var(--danger);color:#fff" >Delete</button></div></td></tr>`
+    });
+    html += '</tbody></table>';
+    return html;
+  }
+
+  function attachStudentActions(){
+    document.querySelectorAll('#studentsTableContainer .editBtn').forEach(b=>b.addEventListener('click', (e)=>{
+      const id = Number(e.target.closest('tr').dataset.id); const stu = DATA.students.find(s=>s.id===id); openStudentModal(stu);
+    }));
+    document.querySelectorAll('#studentsTableContainer .viewBtn').forEach(b=>b.addEventListener('click', (e)=>{
+      const id = Number(e.target.closest('tr').dataset.id); navigate('#/teacher/students'); renderStudentsPage(); setTimeout(()=>{ document.querySelector(`#studentsTable tr[data-id="${id}"]`)?.scrollIntoView({behavior:'smooth'}) },300);
+    }));
+    document.querySelectorAll('#studentsTableContainer button[style*="--danger"] , #studentsTableContainer button[style*="background:var(--danger)"] , #studentsTableContainer button[style*="background:var(--danger)"] ').forEach(b=>b.addEventListener('click', (e)=>{
+      const id = Number(e.target.closest('tr').dataset.id);
+      if(confirm('Delete student? This will remove their grades too.')){ DATA.students = DATA.students.filter(s=>s.id!==id); DATA.grades = DATA.grades.filter(g=>g.studentId!==id); saveData(DATA); location.reload(); }
+    }));
+  }
+
+  // Students management page
+  function renderStudentsPage(){
+    const tpl = document.getElementById('studentsPage').content.cloneNode(true);
+    document.getElementById('view').innerHTML=''; document.getElementById('view').appendChild(tpl);
+    const table = document.getElementById('studentsTable');
+    table.innerHTML = buildStudentsTableHtml(DATA.students);
+    document.getElementById('stuSearch').addEventListener('input', (e)=>{ const q=e.target.value.toLowerCase(); const filtered = DATA.students.filter(s=>s.name.toLowerCase().includes(q)||s.email.toLowerCase().includes(q)); table.innerHTML = buildStudentsTableHtml(filtered); attachTableActions(); });
+    document.getElementById('newStudent').addEventListener('click',()=>openStudentModal());
+    attachTableActions();
+  }
+  function attachTableActions(){
+    document.querySelectorAll('#studentsTable .editBtn').forEach(b=>b.addEventListener('click', (e)=>{ const id=Number(e.target.closest('tr').dataset.id); const stu=DATA.students.find(s=>s.id===id); openStudentModal(stu); }));
+    document.querySelectorAll('#studentsTable .viewBtn').forEach(b=>b.addEventListener('click', (e)=>{ const id=Number(e.target.closest('tr').dataset.id); showStudentDetails(id); }));
+    document.querySelectorAll('#studentsTable button[style*="--danger"] , #studentsTable button[style*="background:var(--danger)"] ').forEach(b=>b.addEventListener('click', (e)=>{ const id=Number(e.target.closest('tr').dataset.id); if(confirm('Delete student?')){ DATA.students=DATA.students.filter(s=>s.id!==id); DATA.grades=DATA.grades.filter(g=>g.studentId!==id); saveData(DATA); renderStudentsPage(); } }));
+  }
+
+  function showStudentDetails(id){
+    const stu = DATA.students.find(s=>s.id===id); if(!stu) return alert('Not found');
+    alert(`${stu.name}\nEmail: ${stu.email}\nCourses: ${stu.enrolledCourses.map(cid=>DATA.courses.find(c=>c.id===cid)?.courseName).join(', ')}`)
+  }
+
+  // Student modal (add/edit)
+  function openStudentModal(stu=null){
+    const root = document.getElementById('modalRoot'); root.innerHTML='';
+    const overlay = document.createElement('div'); overlay.className='overlay';
+    const box = document.createElement('div'); box.className='modal panel';
+    let enrolled = (stu?.enrolledCourses || []).slice();
+    box.innerHTML = `
+      <h3>${stu? 'Edit Student' : 'Add New Student'}</h3>
+      <div class="form-row"><input id="mName" placeholder="Full name" value="${stu?stu.name:''}" /><input id="mEmail" placeholder="Email" value="${stu?stu.email:''}" /></div>
+      <div class="form-row"><input id="mPass" placeholder="Password" value="${stu?stu.password:'student123'}" /><select id="mEnroll" multiple size="5" style="min-width:160px">
+      ${DATA.courses.map(c=>`<option value="${c.id}" ${enrolled.includes(c.id)?'selected':''}>${c.courseName}</option>`).join('')}
+      </select></div>
+      <div style="display:flex;gap:8px;margin-top:12px"><button id="saveStu" class="btn primary">Save</button><button id="cancelStu" class="btn ghost">Cancel</button></div>
+    `;
+    root.appendChild(overlay); root.appendChild(box);
+    overlay.addEventListener('click',()=>{ root.innerHTML=''; }); document.getElementById('cancelStu').addEventListener('click',()=>root.innerHTML='');
+    document.getElementById('saveStu').addEventListener('click',()=>{
+      const name = document.getElementById('mName').value.trim(); const email=document.getElementById('mEmail').value.trim(); const pass=document.getElementById('mPass').value.trim(); const selects = Array.from(document.getElementById('mEnroll').selectedOptions).map(o=>Number(o.value));
+      if(!name||!email){ return alert('Name & email required') }
+      if(stu){ stu.name=name; stu.email=email; stu.password=pass; stu.enrolledCourses=selects; } else {
+        const newId = DATA.students.reduce((a,b)=>Math.max(a,b.id),0)+1;
+        DATA.students.push({id:newId,name,email,password:pass,enrolledCourses:selects});
+      }
+      saveData(DATA); root.innerHTML=''; renderStudentsPage();
+    });
+  }
+
+  // Gradebook page
+  function renderGradebook(){
+    const tpl = document.getElementById('gradebookPage').content.cloneNode(true);
+    document.getElementById('view').innerHTML=''; document.getElementById('view').appendChild(tpl);
+    const sel = document.getElementById('gradeCourseSelect');
+    DATA.courses.forEach(c=>{ const opt=document.createElement('option'); opt.value=c.id; opt.textContent=c.courseName; sel.appendChild(opt); });
+    sel.addEventListener('change',()=>renderGradebookTable(Number(sel.value)));
+    renderGradebookTable(DATA.courses[0].id);
+    document.getElementById('exportGrades').addEventListener('click',()=>{ const blob=new Blob([JSON.stringify(DATA.grades,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='grades.json'; a.click(); URL.revokeObjectURL(url); });
+  }
+  function renderGradebookTable(courseId){
+    const container = document.getElementById('gradebookTable'); const course = DATA.courses.find(c=>c.id===courseId);
+    let html = `<h3>${course.courseName} — Grade Entry</h3><table><thead><tr><th>Student</th><th>Grade</th><th>Actions</th></tr></thead><tbody>`;
+    DATA.students.forEach(s=>{
+      // only show students enrolled in course
+      if(!s.enrolledCourses.includes(courseId)) return;
+      const g = DATA.grades.find(gr=>gr.studentId===s.id && gr.courseId===courseId);
+      html+=`<tr data-id="${s.id}"><td>${s.name}</td><td><input type="number" min="0" max="100" value="${g?g.grade:''}" style="width:90px;padding:6px;border-radius:6px;border:1px solid #e6eef6" /></td><td><button class="btn ghost saveGrade">Save</button></td></tr>`
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
+    container.querySelectorAll('.saveGrade').forEach(b=>b.addEventListener('click',(e)=>{
+      const tr = e.target.closest('tr'); const sid = Number(tr.dataset.id); const val = Number(tr.querySelector('input').value);
+      if(Number.isNaN(val) || val<0 || val>100){ return alert('Enter a grade 0-100'); }
+      const existing = DATA.grades.find(g=>g.studentId===sid && g.courseId===courseId);
+      if(existing) existing.grade = val; else DATA.grades.push({studentId:sid,courseId:courseId,grade:val});
+      saveData(DATA); alert('Saved');
+    }));
+  }
+
+  // Reports
+  function renderReports(){
+    const tpl = document.getElementById('reportsPage').content.cloneNode(true);
+    document.getElementById('view').innerHTML=''; document.getElementById('view').appendChild(tpl);
+    const out = document.getElementById('reportsContent'); out.innerHTML='';
+    DATA.courses.forEach(c=>{
+      const grades = DATA.grades.filter(g=>g.courseId===c.id).map(g=>g.grade);
+      out.innerHTML += `<div style="margin-bottom:8px"><strong>${c.courseName}:</strong> ${grades.length?average(grades)+'%':'No grades yet'}</div>`
+    });
+  }
+
+  function renderTeacherSettings(){ const tpl=document.getElementById('teacherSettings').content.cloneNode(true); document.getElementById('view').innerHTML=''; document.getElementById('view').appendChild(tpl); document.getElementById('adminName').value = DATA.admins[0].name; document.getElementById('adminEmail').value = DATA.admins[0].email; document.getElementById('saveAdmin').addEventListener('click',()=>{ DATA.admins[0].name=document.getElementById('adminName').value; DATA.admins[0].email=document.getElementById('adminEmail').value; saveData(DATA); alert('Saved') }) }
+
+  // Student pages
+  function renderStudentDashboard(){
+    const tpl = document.getElementById('studentDashboard').content.cloneNode(true);
+    document.getElementById('view').innerHTML=''; document.getElementById('view').appendChild(tpl);
+    const user = getCurrentUser(); const stu = DATA.students.find(s=>s.id===user.id);
+    document.getElementById('stuNameSpan').textContent = stu.name;
+    document.getElementById('stuCoursesCnt').textContent = stu.enrolledCourses.length;
+    const grades = DATA.grades.filter(g=>g.studentId===stu.id).map(g=>g.grade);
+    document.getElementById('stuOverallAvg').textContent = grades.length? average(grades)+'%':'—';
+    const list = document.getElementById('stuCoursesList'); list.innerHTML='';
+    stu.enrolledCourses.forEach(cid=>{
+      const c = DATA.courses.find(x=>x.id===cid);
+      const g = DATA.grades.find(x=>x.courseId===cid && x.studentId===stu.id)?.grade;
+      const pillClass = g>=90? 'grade-A' : g>=80? 'grade-B' : g>=70? 'grade-C' : g>=60? 'grade-D' : 'grade-F';
+      const row = document.createElement('div'); row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center'; row.style.padding='8px 0'; row.innerHTML = `<div><strong>${c.courseName}</strong><div class="muted">${c.teacher} · ${c.credits} credits</div></div><div style="text-align:right">${g?`<div class="grade-pill ${pillClass}">${g}%</div>`:'<span class="muted">No grade</span>'}<div style="margin-top:6px"><a href="#/student/course/${c.id}">View Details</a></div></div>`;
+      list.appendChild(row);
+    });
+  }
+  function renderStudentCourses(courseId=null){ const tpl=document.getElementById('studentCourses').content.cloneNode(true); document.getElementById('view').innerHTML=''; document.getElementById('view').appendChild(tpl); const user=getCurrentUser(); const stu=DATA.students.find(s=>s.id===user.id); const el=document.getElementById('stuCourseDetails'); if(courseId){ const c=DATA.courses.find(x=>x.id===courseId); const g=DATA.grades.find(x=>x.courseId===courseId && x.studentId===stu.id); el.innerHTML = `<h3>${c.courseName}</h3><div class="muted">Teacher: ${c.teacher} · Credits: ${c.credits}</div><div style="margin-top:12px">Grade: ${g?g.grade+'%':'—'}</div>`; } else { el.innerHTML = '<div class="muted">Select a course from your dashboard to see details.</div>'; } }
+
+  // Initial app load
+  function boot(){
+    const current = getCurrentUser();
+    if(!current){ navigate('#/login'); renderLogin(); return; }
+    showSidebarsFor(current.role);
+    // choose route
+    const hash = window.location.hash || (current.role==='teacher'?'#/teacher/dashboard':'#/student/dashboard');
+    if(current.role==='teacher'){
+      document.querySelectorAll('.nav-item').forEach(it=>it.classList.toggle('active', it.dataset.route===hash));
+      if(hash.startsWith('#/teacher/dashboard')) renderTeacherDashboard();
+      else if(hash.startsWith('#/teacher/students')) renderStudentsPage();
+      else if(hash.startsWith('#/teacher/gradebook')) renderGradebook();
+      else if(hash.startsWith('#/teacher/reports')) renderReports();
+      else if(hash.startsWith('#/teacher/settings')) renderTeacherSettings();
+      else renderTeacherDashboard();
+    } else {
+      if(hash.startsWith('#/student/dashboard')) renderStudentDashboard();
+      else if(hash.startsWith('#/student/courses')){
+        const m = hash.match(/#\/student\/course\/(\d+)/); if(m){ renderStudentCourses(Number(m[1])); } else renderStudentCourses();
+      }
+      else if(hash.startsWith('#/student/settings')){ document.getElementById('view').innerHTML='<h2>Student Settings</h2><div class="panel">Profile settings will be here.</div>' }
+      else renderStudentDashboard();
+    }
+  }
+
+  // On first load, if no current user, show a small welcome; also provide quick buttons
+  window.addEventListener('load',()=>{
+    // small auto-login if current user present
+    const curr = getCurrentUser(); if(!curr){ // leave login
+      renderLogin();
+    } else boot();
+  });
+
+  // handle hash change
+  window.addEventListener('hashchange', ()=>{ boot(); });
+
+  // Expose navigation helpers for quick links
+  window.navigate = navigate;
+
+  </script>
+</body>
+</html>
+

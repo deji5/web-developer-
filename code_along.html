@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // Global scope - available everywhere
+        let globalMessage = "I'm available everywhere";
+
+        function demonstrateScope() {
+            // Function scope - only available inside this function
+            let functionMessage = "I'm only available in this function";
+            
+            console.log("Inside function:");
+            console.log("Global message:", globalMessage);  // ✅ Can access global
+            console.log("Function message:", functionMessage); // ✅ Can access local
+            
+            // Block scope with if statement
+            if (true) {
+                let blockMessage = "I'm only available in this block";
+                console.log("Block message:", blockMessage); // ✅ Can access in same block
+                
+                // Can access both global and function variables from inside block
+                console.log("From block - Global:", globalMessage);
+                console.log("From block - Function:", functionMessage);
+            }
+            
+            // Trying to access block variable outside the block would cause an error
+            // console.log("Block message outside:", blockMessage); // ❌ Error!
+        }
+
+        // Call the function
+        demonstrateScope();
+
+        // Trying to access function variable outside the function would cause an error
+        // console.log("Function message outside:", functionMessage); // ❌ Error!
+
+        console.log("Outside function - Global message:", globalMessage); // ✅ Works
+
+        console.log(""); // Empty line
+
+        // Practical scope example with functions
+        function calculateTotal(price, taxRate) {
+            // Parameters (price, taxRate) are function-scoped
+            let subtotal = price;  // Function-scoped variable
+            
+            if (taxRate > 0) {
+                let tax = subtotal * taxRate;  // Block-scoped variable
+                let total = subtotal + tax;    // Block-scoped variable
+                
+                return {
+                    subtotal: subtotal,
+                    tax: tax,
+                    total: total
+                };
+            }
+            
+            // tax and total variables don't exist here
+            return {
+                subtotal: subtotal,
+                tax: 0,
+                total: subtotal
+            };
+        }
+
+        let purchase = calculateTotal(100, 0.08);
+        console.log("Purchase calculation:", purchase);
+
+        console.log(""); // Empty line
+
+        // Example showing why scope matters
+        let counter = 0; // Global counter
+
+        function incrementGlobal() {
+            counter++; // Modifies global variable
+            console.log("Global counter:", counter);
+        }
+
+        function incrementLocal() {
+            let counter = 0; // Local variable (different from global)
+            counter++;
+            console.log("Local counter:", counter);
+        }
+
+        incrementGlobal(); // Changes global counter to 1
+        incrementGlobal(); // Changes global counter to 2
+        incrementLocal();  // Uses local counter (always shows 1)
+        incrementLocal();  // Uses local counter (always shows 1)
+        console.log("Final global counter:", counter); // Still 2
+    </script>
+</body>
+</html>

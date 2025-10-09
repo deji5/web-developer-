@@ -1,0 +1,76 @@
+body {
+  font-family: "Poppins", sans-serif;
+  background: #4d4766;
+  margin: 120px;
+  padding: 20px;
+
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  background: linear-gradient(180deg,white, rgb(114, 114, 131), white);
+  padding: 90px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+h1 {
+  text-align: center;
+  color: #000000;
+}
+
+form, .filter-section, .budget-section {
+  margin: 20px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+input, select, button {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border: none;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.category-Food { color: orange; }
+.category-Transport { color: blue; }
+.category-Entertainment { color: purple; }
+.category-Education { color: green; }
+.category-Other { color: gray; }
+
+#budgetMessage {
+  font-weight: bold;
+}
+
+@media (max-width: 600px) {
+  form, .filter-section, .budget-section {
+    flex-direction: column;
+  }
+}
+
