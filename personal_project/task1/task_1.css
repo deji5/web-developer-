@@ -1,6 +1,6 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #f5f7fa;
+  background-color: #caaa9d;
   margin: 20px;
 }
 
@@ -35,8 +35,10 @@ button {
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #5db974;
+  color: #000;
 }
+
 
 .search-container {
   text-align: center;
@@ -46,7 +48,7 @@ button:hover {
 #studentTable {
   width: 100%;
   border-collapse: collapse;
-  background: white;
+  background: linear-gradient(white,#caaa9d,white);
 }
 
 #studentTable th, #studentTable td {
@@ -56,7 +58,7 @@ button:hover {
 }
 
 #studentTable th {
-  background-color: #f2f2f2;
+  background: linear-gradient(white,#caaa9d,white);
 }
 
 .performance {
@@ -83,5 +85,6 @@ button:hover {
 img {
   width: 50px;
   height: 50px;
-  border-radius: 10%;
+  border-radius: 50%;
+  opacity: 0.7;
 }

@@ -12,7 +12,7 @@ let budget = JSON.parse(localStorage.getItem("budget")) || 0;
 
 // Format currency (₦)
 function formatCurrency(amount) {
-  return `₦${amount.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`;
+  return `₦${amount.toLocaleString("en-NG", { minimumFractionDigits: 2})}`;
 }
 
 // Save to localStorage

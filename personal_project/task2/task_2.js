@@ -32,9 +32,15 @@ function renderTasks(filter = "all") {
       <div class="actions">
         <i class="fas fa-trash" onclick="deleteTask(${index})"></i>
       </div>
+      <button class="delete" onclick="deleteTasks()"></button>
     `;
 
     taskList.appendChild(li);
+
+    li.querySelector(".delete").addEventListener("click", () => {
+      li.remove();
+      deleteTask(index)
+    })
   });
 }
 

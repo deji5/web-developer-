@@ -49,7 +49,7 @@ function addStudentToTable(student) {
     row.remove();
     deleteStudent(student.name);
   });
-}~~~
+}
 
 function getPerformanceClass(perf) {
   if (perf === "Excellent") return "excellent";

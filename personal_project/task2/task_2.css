@@ -147,4 +147,10 @@ ul#task-list {
   color: #007bff;
 }
 
-
+.delete {
+  background-color: #ffffff;
+}
+.delete:hover{
+  background-color: #ccc;
+  color: #ccc;
+}
